@@ -1,5 +1,5 @@
-#ifndef __SB_TGV  // TODO : rename include guard
-#define __SB_TGV
+#ifndef __TGV__  // TODO : rename include guard
+#define __TGV__
 
 #include <memory>
 #include <opencv2/opencv.hpp>
@@ -32,4 +32,4 @@ class TGV {
     double iter_num = 1500;
 };
 
-#endif
+#endif // __TGV__
