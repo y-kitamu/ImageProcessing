@@ -1,0 +1,11 @@
+MACRO(ADD_SUBDIRS)
+  FILE(GLOB sub_dirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+  FOREACH(dir IN LISTS sub_dirs)
+    IF (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir})
+      IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/CMakeLists.txt)
+        add_subdirectory(${dir})
+      ENDIF()
+    ENDIF()
+  ENDFOREACH()
+ENDMACRO()
+
