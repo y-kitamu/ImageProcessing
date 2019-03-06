@@ -5,6 +5,8 @@
 #include <opencv2/opencv.hpp>
 
 
+namespace TGV {
+
 class TGV {
     // TGV denoising class
   public:
@@ -12,15 +14,14 @@ class TGV {
     
   private:
     void prox_grad_v(); // proximal gradient methods (eq.(4.5) top)
-    void shrinkage(std::shared_ptr<cv::Mat> image, double lambda);  // (eq.(4.10) top)
-    double nesterov_acc(std::shared_ptr<cv::Mat> image0, std::shared_ptr<cv::Mat> image1, std::shared_ptr<cv::Mat> dst,
-                        double t0, double t1); // nesterov accerelation (eq.(4.5) middle & bottom)
+    void shrinkage(cv::Mat *image, double lambda);  // (eq.(4.10) top)
+    double nesterov_acc(const cv::Mat &image0, const cv::Mat &image1, cv::Mat *dst, double t0, double t1); // nesterov accerelation (eq.(4.5) middle & bottom)
     double clalc_error();
 
-    std::shared_ptr<cv::Mat> sym_grad(std::shared_ptr<cv::Mat> image);
-    std::shared_ptr<cv::Mat> divergence(std::shared_ptr<cv::Mat> image);
-    std::shared_ptr<cv::Mat> square_sym_grad(std::shared_ptr<cv::Mat> image);
-    std::shared_ptr<cv::Mat> square_divergence(std::shared_ptr<cv::Mat> iamge);
+    void sym_grad(const cv::Mat &src, cv::Mat *dst);
+    void divergence(const cv::Mat &src, cv::Mat dst);
+    void square_sym_grad(const cv::Mat &src, cv::Mat *dst);
+    void square_divergence(const cv::Mat &src, cv::Mat *dst);
 
   private:
     std::shared_ptr<cv::Mat> input, output;
@@ -31,5 +32,7 @@ class TGV {
     double alpha_0 = 0.1, alpha_1 = 0.05;
     double iter_num = 1500;
 };
+
+}
 
 #endif // __TGV__
