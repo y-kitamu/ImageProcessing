@@ -3,10 +3,10 @@
 namespace TGV {
 
 void TGV::denoise() {
-    double t0 = 1, t1 = 0.5 + std::sqrt(1.25), t2; 
+    double t0 = 1, t1 = 0.5 + std::sqrt(1.25), t2;
     for (int i = 0; i < iter_num; i++) {
         prox_grad_v();
-        t2 = nesterov_acc(v0, v1, v_bar, t0, t1);
+        t2 = nesterov_acc(v0, v1, &v_bar, t0, t1);
         t0 = t1;
         t1 = t2;
     }
@@ -16,10 +16,10 @@ void TGV::prox_grad_v() {
     double t0 = 1, t1 = 0.5 + std::sqrt(1.25), t2; 
     cv::Mat shrink_image;
     for (int i = 0; i < iter_num; i++) {
-        shrinkage(shrink_image, alpha_0);
-        shrinkage(shrink_image, sigma * alpha_1);
+        shrinkage(&shrink_image, alpha_0);
+        shrinkage(&shrink_image, sigma * alpha_1);
         
-        t2 = nesterov_acc(eta0, eta1, eta_bar, t0, t1);
+        t2 = nesterov_acc(eta0, eta1, &eta_bar, t0, t1);
         
         double error = calc_error();
         if (error < epsilon_p) {
@@ -46,7 +46,7 @@ double TGV::nesterov_acc(const cv::Mat &image0, const cv::Mat &image1, cv::Mat *
     int height = image0.rows;
 
     for (int y =0; y < height; y++, ptr_i0 += stride_y, ptr_i1 += stride_y, ptr_dst += stride_y) {
-        for (int x = 0; x < width; x++) {n
+        for (int x = 0; x < width; x++) {
             int offset = x * stride_x;
             for (int k = 0; k < stride_x; k++) {
                 int ofs = offset + k;
@@ -58,16 +58,16 @@ double TGV::nesterov_acc(const cv::Mat &image0, const cv::Mat &image1, cv::Mat *
     return t2;
 }
 
-void TGV::shrinkage(cv::Mat image, double lambda) {
+void TGV::shrinkage(cv::Mat *image, double lambda) {
 
 }
 
 
 void TGV::divergence(const cv::Mat &src, cv::Mat *dst) {
-    int src_stride_x = src.strideX<float>();
-    int src_stride_y = src.strideY<float>();
-    int dst_stride_x = dst->strideX<float>();
-    int dst_stride_y = dst->strideY<float>();
+    int src_stride_x = src.channels();
+    int src_stride_y = src.step1();
+    int dst_stride_x = dst->channels();
+    int dst_stride_y = dst->step1();
 
     if (src_stride_x != 3 || dst_stride_x != 2) {
         return;
@@ -77,7 +77,7 @@ void TGV::divergence(const cv::Mat &src, cv::Mat *dst) {
     const float * ptr_src1 = ptr_src0 + src_stride_y;
     float * ptr_dst = dst->ptr<float>();
 
-     int width = src.width(), height = src.height();
+     int width = src.cols, height = src.rows;
 
     for (int y = 0; y < height - 1; y++) {
         const float * ps0 = ptr_src0;

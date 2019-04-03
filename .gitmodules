@@ -1,0 +1,3 @@
+[submodule "ext/cmdline"]
+	path = ext/cmdline
+	url = https://github.com/tanakh/cmdline.git
