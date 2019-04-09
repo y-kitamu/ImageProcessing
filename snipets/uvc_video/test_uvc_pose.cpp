@@ -15,8 +15,9 @@ namespace fs = boost::filesystem;
 
 int main(int argc, char ** argv) {
     /*
-     * ファイルを保存する
-     *
+     * 姿勢推定用の画像を撮影する。
+     * カメラの位置を固定して撮影。apriltag を複数枚含む画像。
+     * sandbox/kitamura/image/<カメラ名>/pose_sample_<カメラ名>_????.png
      */
     const int HIGH_RESO = 10000;
 
@@ -37,7 +38,7 @@ int main(int argc, char ** argv) {
         }
     }
 
-    std::string base_head = "apriltags_sample_" + boost::algorithm::to_lower_copy(camera) + "_";
+    std::string base_head = "pose_sample_" + boost::algorithm::to_lower_copy(camera) + "_";
     int max_used_idx = 0;
     BOOST_FOREACH(const fs::path &p, std::make_pair(fs::directory_iterator(path), fs::directory_iterator())) {
         if (!fs::is_directory(p)) {

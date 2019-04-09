@@ -15,10 +15,14 @@ if (OpenCV_FOUND)
   set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OpenCV_LIBS})
 endif(OpenCV_FOUND)
 
-include_directories(AFTER ext)
+# boost  (参考 : https://sgry.jp/blog/2017/06/06/4624/)
+# target_link_libraries(<executable_name> Boost::filesystem Boost::system) みたいな感じで link する
+set(BOOST_ROOT "/home/kitamura/lib/boost_1_67_0")
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+include_directories(AFTER ext ext/eigen)
 
 include_directories(AFTER TGV)
 add_subdirectory(TGV)
 
 add_subdirectory(snipets)
-
