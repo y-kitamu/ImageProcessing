@@ -8,8 +8,12 @@
                                        "~/work/opencv/TGV/"
                                        "/home/kitamura/work/opencv/ext/"
                                        "/home/kitamura/work/opencv/ext/eigen"
+                                       "/usr/local/include/opencv4/"
+                                       "/home/kitamura/work/ImageProcessing/ext/"
+                                       "/home/kitamura/work/ImageProcessing/ext/eigen/"
                                        ))
       )))
 
-((irony-cdb-json-add-compile-commands-path "./" "../build/opencv/compile_commands.json"))
 
+;; ((irony-cdb-json-add-compile-commands-path "./" "../build/opencv/compile_commands.json"))
+(irony-cdb-json-add-compile-commands-path "./" "../build/ImageProcessing/compile_commands.json")

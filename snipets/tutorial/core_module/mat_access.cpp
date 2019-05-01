@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cmdline/cmdline.h>
+#include <Eigen/Eigen>
 
 
 cv::Mat scanImageAndReduceC(cv::Mat & I, const uint8_t *table) {
@@ -12,7 +13,7 @@ cv::Mat scanImageAndReduceC(cv::Mat & I, const uint8_t *table) {
 
 
 cv::Mat scanImageAndReduceIterator(cv::Mat &I, const uint8_t *table) {
-    
+
 }
 
 
