@@ -21,7 +21,7 @@ endif(OpenCV_FOUND)
 set(BOOST_ROOT "/home/kitamura/lib/boost_1_67_0")
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
-include_directories(AFTER ext ext/eigen)
+include_directories(SYSTEM AFTER ext ext/eigen)
 
 include_directories(AFTER TGV)
 add_subdirectory(TGV)

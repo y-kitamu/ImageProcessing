@@ -34,5 +34,4 @@ int main(int argc, char ** argv) {
 
     auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(tp1 - tp0).count();
 
-
 }
