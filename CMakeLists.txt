@@ -8,13 +8,13 @@ include(cmake/utility.cmake)
 set(LIBRARIES "")
 set(EXTERNAL_LIBS "")
 
-# opencv 
+# opencv, glew, glfw
 find_package(OpenCV REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glfw3 REQUIRED)
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${GLEW_LIBRARIES} glfw ${OpenCV_LIBS})
 
-if (OpenCV_FOUND)
-  include_directories(${OpenCV_INCLUDE_DIRS})
-  set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OpenCV_LIBS})
-endif(OpenCV_FOUND)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # boost  (参考 : https://sgry.jp/blog/2017/06/06/4624/)
 # target_link_libraries(<executable_name> Boost::filesystem Boost::system) みたいな感じで link する
