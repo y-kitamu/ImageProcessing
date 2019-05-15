@@ -22,6 +22,7 @@ int main() {
     }
 
     std::cout << "A Vector of 2D Points = " << vpts << std::endl;
-    
+
+
     return 0;
 }

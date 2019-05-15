@@ -18,7 +18,12 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 # boost  (参考 : https://sgry.jp/blog/2017/06/06/4624/)
 # target_link_libraries(<executable_name> Boost::filesystem Boost::system) みたいな感じで link する
-set(BOOST_ROOT "/home/kitamura/lib/boost_1_67_0")
+if (EXISTS "/home/kitamura/lib/boost_1_67_0")
+  set(BOOST_ROOT "/home/kitamura/lib/boost_1_67_0")
+elseif (EXISTS "/home/kitamura/lib/boost/")
+  set(BOOST_ROOT "/home/kitamura/lib/boost")
+endif()
+message("BOOST_ROOT : ${BOOST_ROOT}")
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 include_directories(SYSTEM AFTER ext ext/eigen)
