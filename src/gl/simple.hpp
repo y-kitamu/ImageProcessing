@@ -11,6 +11,7 @@ namespace gl {
 class SimpleGL {
   public:
     SimpleGL() {
+        // 初期化
         int width = 1024, height = 768;
         if (!glfwInit()) {
             std::cout << "failed to initialize GLFW" << std::endl;
@@ -41,16 +42,21 @@ class SimpleGL {
         }
 
         // Ensure we can capture the escape key being pressed below
-        glfwSetInputMode(img_window, GLFW_STICKY_KEYS, GL_TRUE); 
-
+        glfwSetInputMode(img_window, GLFW_STICKY_KEYS, GL_TRUE);
         
         // 頂点データを準備
-        vertices = sizeof(position) / sizeof(position[0]);
-        // std::cout << "vertices : " << vertices << std::endl;
-
         // 頂点バッファオブジェクト (VBO) を直接描画に指定することはできません.
         // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO) だけです.
-        
+        // GL_TEXTURE_RECTANGLE の場合、uv 座標は Textureの ピクセルの座標の値と一致する。
+        // x, y, u, v
+        GLfloat position[4][4] = {
+            {-0.5f, -0.5f, 0.0f, 512}, 
+            { 0.5f, -0.5f, 512, 512}, 
+            { 0.5f,  0.5f, 512, 0.0f}, 
+            {-0.5f,  0.5f, 0.0f, 0.0f}, 
+        };
+        vertices = sizeof(position) / sizeof(position[0]);
+
         // VAO を作成、有効にする
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -61,11 +67,15 @@ class SimpleGL {
         glBufferData(GL_ARRAY_BUFFER, sizeof(position), position, GL_STATIC_DRAW); // 実データを格納
 
         // 位置属性を 「0」にバインド（シェーダー側で後で参照）
-        int index = 0, size = 2, stride = 0;
+        int index = 0, size = 2, stride = sizeof(position[0]);
         glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, 0); // shader の attrib 属性に渡すデータの指定
+        glEnableVertexAttribArray(index);
+        index = 1;
+        glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void *)(stride / 2));
         glEnableVertexAttribArray(index);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0); // vbo の bind を解除
+
         glBindVertexArray(0); // vao の bind を解除
         
         // テクスチャ
@@ -127,13 +137,6 @@ class SimpleGL {
     std::string vertex_shader_fname, fragment_shader_fname;
     int vertices;
     
-    GLfloat position[4][2] = {
-        {-1.0f, -1.0f}, //, 1.0f, 1.0f, 1.0f},
-        { 1.0f, -1.0f}, //, 0.0f, 1.0f, 1.0f},
-        { 1.0f,  1.0f}, //, 1.0f, 0.0f, 1.0f},
-        {-1.0f,  1.0f}, //, 1.0f, 1.0f, 0.0f},
-    };
 };
 
 } // namespace gl
-
