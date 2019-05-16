@@ -9,6 +9,7 @@ MACRO(ADD_SUBDIRS)
   ENDFOREACH()
 ENDMACRO()
 
+
 MACRO(ADD_TEST)
   FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/test_*.cpp")
   FOREACH(fname IN LISTS file_list)
@@ -17,3 +18,14 @@ MACRO(ADD_TEST)
     target_link_libraries(${module_name}_${basename} ${LIBRARIES} ${EXTERNAL_LIBS})
   ENDFOREACH()
 ENDMACRO()
+
+
+MACRO(ADD_LIB)
+  FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+  if (file_list)
+    add_library(${module_name} ${file_list})
+    set(LIBRARIES ${LIBRARIES} ${module_name} CACHE INTERNAL "")
+    message("${module_name} : ${file_list}")
+  endif()
+ENDMACRO()
+
