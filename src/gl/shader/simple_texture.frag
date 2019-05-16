@@ -1,9 +1,11 @@
-#version 330 core
+  #version 330 core
 
-out vec3 color;
+out vec4 color;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2DRect image;
 
 void main() {
-    color = texture(myTextureSampler, uv).rgb;
+    // color = vec4(1.0, 1.0, 1.0, 0.0);
+    color = texture(image, gl_FragCoord.xy);
 }
+
