@@ -1,6 +1,6 @@
 set(module_name "gl")
 
-message(${LIBRARIES})
+# message(${LIBRARIES})
 ADD_TEST()
 
 

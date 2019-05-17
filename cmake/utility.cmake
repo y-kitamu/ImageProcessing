@@ -25,7 +25,7 @@ MACRO(ADD_LIB)
   if (file_list)
     add_library(${module_name} ${file_list})
     set(LIBRARIES ${LIBRARIES} ${module_name} CACHE INTERNAL "")
-    message("${module_name} : ${file_list}")
+    # message("${module_name} : ${file_list}")
   endif()
 ENDMACRO()
 

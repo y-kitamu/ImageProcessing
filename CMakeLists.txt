@@ -14,7 +14,7 @@ find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENGL_LIBRARY} ${GLEW_LIBRARIES} glfw ${OpenCV_LIBS})
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENGL_LIBRARY} ${GLEW_LIBRARIES} glfw ${OpenCV_LIBS} CACHE INTERNAL "")
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -30,11 +30,15 @@ find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 # ceres solver
 find_package(Ceres REQUIRED)
-set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES})
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
 
 # Eigen
-include_directories(SYSTEM AFTER ext ext/eigen)
+include_directories(SYSTEM AFTER ext/eigen)
 
+# another submodules
+include_directories(AFTER ext ext/imgui)
+add_subdirectory(ext)
+# message(${EXTERNAL_LIBS})
 
 ### Add Subdirectory Libraries
 include_directories(AFTER src src/TGV)
