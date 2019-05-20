@@ -9,12 +9,20 @@ set(LIBRARIES "" CACHE INTERNAL "")
 set(EXTERNAL_LIBS "" CACHE INTERNAL "")
 
 ### External Libraries
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CMAKE_DL_LIBS} CACHE INTERNAL "")
+
 # opencv, glew, glfw
 find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
+# find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${OPENGL_LIBRARY} ${GLEW_LIBRARIES} glfw ${OpenCV_LIBS} CACHE INTERNAL "")
+set(EXTERNAL_LIBS
+  ${EXTERNAL_LIBS}
+  ${OPENGL_LIBRARY}
+  # ${GLEW_LIBRARIES}
+  glfw
+  ${OpenCV_LIBS}
+  CACHE INTERNAL "")
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -37,6 +45,7 @@ include_directories(SYSTEM AFTER ext/eigen)
 
 # another submodules
 include_directories(AFTER ext ext/imgui)
+include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
 

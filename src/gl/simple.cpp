@@ -24,14 +24,20 @@ void SimpleGL::init_gl() {
         std::exit(EXIT_FAILURE);
     }
     glfwMakeContextCurrent(img_window);
-        
-    // Initialize GLEW
-    glewExperimental = true; // Needed for core profile
-    if (glewInit() != GLEW_OK) {
-        std::cout << "failed to initialize GLEW" << std::endl;
-        glfwTerminate();
+
+    // Initialize GL3W
+    if (gl3wInit()) {
+        std::cout << "failed to initialize gl3w" << std::endl;
         std::exit(EXIT_FAILURE);
     }
+    
+    // Initialize GLEW
+    // glewExperimental = true; // Needed for core profile
+    // if (glewInit() != GLEW_OK) {
+    //     std::cout << "failed to initialize GLEW" << std::endl;
+    //     glfwTerminate();
+    //     std::exit(EXIT_FAILURE);
+    // }
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(img_window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -45,9 +51,8 @@ void SimpleGL::init_imgui() {
     ImGui::StyleColorsDark();
     ImGui::StyleColorsClassic();
 
-    ImGuiImplGlfw_InitForOpenGL(img_window, true);
+    ImGui_ImplGlfw_InitForOpenGL(img_window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-    
 }
 
 void SimpleGL::load_gl_objects() {
@@ -126,7 +131,13 @@ void SimpleGL::draw_imgui() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow(&show_demo_window);
+    ImGui::Begin("Hello world!");
+    ImGui::Checkbox("demo window", &demo_window);
+    ImGui::Checkbox("another window", &another_window);
+    ImGui::End();
+    
+    ImGui::Render();
+    // ImGui::ShowDemoWindow(&show_demo_window);
 
 }
 
