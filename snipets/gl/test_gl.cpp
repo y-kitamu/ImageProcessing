@@ -10,19 +10,18 @@ int main() {
     std::string frag_shader = "/home/kitamura/work/opencv/src/gl/shader/simple_texture.frag";
     
     gl::SimpleGL window = gl::SimpleGL();
-    std::cout << "end init" << std::endl;
     window.set_shader(vert_shader, frag_shader);
-    std::cout << "end init" << std::endl;
 
-    cv::Mat img;
-    // cv::Mat img = cv::imread("/home/kitamura/work/opencv/data/img/Lenna.png");
+    cv::Mat img = cv::imread("/home/kitamura/work/opencv/data/img/Lenna.png");
     // std::cout << img.size << std::endl;
     // cv::flip(img, img, 0);
 
-    // for (int i = 0; i < 100; i++) {
-    while (true) {
+    window.set_frame(img);
+
+    for (int i = 0; i < 100; i++) {
         // std::cout << i << std::endl;
-        window.draw(img);
+        window.draw();
     }
+
     
 }
