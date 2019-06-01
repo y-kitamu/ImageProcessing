@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2)
 
+project(ImageProcessing)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -13,6 +15,7 @@ set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CMAKE_DL_LIBS} CACHE INTERNAL "")
 
 # opencv, glew, glfw
 find_package(OpenCV REQUIRED)
+set(OpenGL_GL_PREFERENCE GLVND) # legacy と glvnd の2種類の opengl が見つかったとき glvnd を選択する
 find_package(OpenGL REQUIRED)
 # find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -39,9 +42,6 @@ find_package(Boost REQUIRED COMPONENTS system filesystem)
 # ceres solver
 find_package(Ceres REQUIRED)
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
-
-# Eigen
-include_directories(SYSTEM AFTER ext/eigen)
 
 # another submodules
 include_directories(AFTER ext ext/imgui)

@@ -1,9 +1,6 @@
 [submodule "ext/cmdline"]
 	path = ext/cmdline
 	url = https://github.com/tanakh/cmdline.git
-[submodule "ext/eigen"]
-	path = ext/eigen
-	url = https://github.com/eigenteam/eigen-git-mirror
 [submodule "ceres-solver"]
 	path = ceres-solver
 	url = https://ceres-solver.googlesource.com/ceres-solver

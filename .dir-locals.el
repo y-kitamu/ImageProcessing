@@ -11,6 +11,7 @@
                                        "/usr/local/include/opencv4/"
                                        "/home/kitamura/work/ImageProcessing/ext/"
                                        "/home/kitamura/work/ImageProcessing/ext/eigen/"
+                                       "/home/kitamura/lib/ceres-solver/include/"
                                        ))
       )))
 

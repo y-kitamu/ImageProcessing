@@ -1,6 +1,6 @@
 set(module_name "ceres")
 
-file(GLOB file_list *.cpp)
+file(GLOB file_list ^[a-zA-Z]*.cpp)
 
 foreach(fname IN LISTS file_list)
   get_filename_component(basename ${fname} NAME_WE)
