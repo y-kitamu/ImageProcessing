@@ -47,4 +47,11 @@ void BaseGL::init_imgui() {
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
+
+void BaseGL::check_keyboard_and_mouse_input() {
+    if (glfwGetKey(img_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(img_window, GLFW_TRUE);
+    }
+}
+
 }

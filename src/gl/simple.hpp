@@ -2,6 +2,7 @@
 #define __GL_SIMPLE_HPP__
 
 #include "base.hpp"
+#include <opencv2/opencv.hpp>
 
 namespace gl {
 class SimpleGL : public BaseGL {

@@ -3,7 +3,10 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <opencv2/opencv.hpp>
+
+#include <sstream>
+#include <thread>
+#include <chrono>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -42,17 +45,34 @@ class BaseGL {
     }
     
     void draw() {
-		// Clear the screen
-        glfwMakeContextCurrent(img_window);
-        glfwPollEvents();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        int framecount = 0;
+        double current, previous = glfwGetTime();
 
-        draw_gl();  // virtual : open gl objects の描画処理
-        draw_imgui();  // virtual : imgui の描画処理
+        while (!glfwWindowShouldClose(img_window)) {
+            // Clear the screen
+            glfwMakeContextCurrent(img_window);
+            glfwPollEvents();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glClear(GL_DEPTH_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(img_window);
+            draw_gl();  // virtual : open gl objects の描画処理
+            draw_imgui();  // virtual : imgui の描画処理
+            check_keyboard_and_mouse_input();
+
+            current = glfwGetTime();
+            framecount++;
+            if (current - previous > 1) {
+                std::stringstream ss;
+                ss << "frame rate : " <<  framecount << " fps";
+                glfwSetWindowTitle(img_window, ss.str().c_str());
+                framecount = 0;
+                previous = current;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            
+            glClear(GL_DEPTH_BUFFER_BIT);
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            glfwSwapBuffers(img_window);
+        }
     }
 
     void set_shader(std::string vertex_shader_fname, std::string fragment_shader_fname) {
@@ -66,12 +86,14 @@ class BaseGL {
   private:
     void init_gl();
     void init_imgui();
+    void check_keyboard_and_mouse_input();
 
   public:
     GLFWwindow *img_window;
     int width = 1024, height = 768;
     GLuint program_id;
-    const char* glsl_version = "#version 460 core";
+    // const char* glsl_version = "#version 460 core";
+    const char* glsl_version="#version 330";
 };
 
 } // namespace gl
