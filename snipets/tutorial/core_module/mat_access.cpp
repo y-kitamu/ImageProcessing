@@ -8,17 +8,17 @@
 
 
 cv::Mat scanImageAndReduceC(cv::Mat & I, const uint8_t *table) {
-
+    return cv::Mat();
 }
 
 
 cv::Mat scanImageAndReduceIterator(cv::Mat &I, const uint8_t *table) {
-
+    return cv::Mat();
 }
 
 
 cv::Mat scanImageAndRedceRandomAccess(cv::Mat &I, const uint8_t *table) {
-    
+    return cv::Mat();
 }
 
 

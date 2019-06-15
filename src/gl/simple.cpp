@@ -33,7 +33,8 @@ void SimpleGL::load_gl_objects() {
     glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, 0);  // shader の attrib 属性に渡すデータの指定
     glEnableVertexAttribArray(index);
     index = 1;
-    glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void *)(stride / 2));
+    int offset  = stride / 2;
+    glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void *)&offset);
     glEnableVertexAttribArray(index);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
