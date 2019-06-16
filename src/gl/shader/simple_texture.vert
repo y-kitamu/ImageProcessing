@@ -9,4 +9,5 @@ out vec2 uv;
 void main() {
     gl_Position = position;
     uv = uv_in;
+    // uv = position.xy;
 }

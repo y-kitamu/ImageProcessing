@@ -30,9 +30,9 @@ class BaseGL {
      */
   public:
     BaseGL() {
-        std::cout << "initialize Base" << std::endl;
         init_gl();
         init_imgui();
+        // load_gl_objects();
     }
 
     ~BaseGL() {
