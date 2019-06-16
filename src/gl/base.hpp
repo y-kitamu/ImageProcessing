@@ -32,7 +32,8 @@ class BaseGL {
     BaseGL() {
         init_gl();
         init_imgui();
-        // load_gl_objects();
+
+        glfwSetWindowSizeCallback(img_window, window_size_callback); // callback を基底クラスと派生クラスにバラバラにおいていい？
     }
 
     ~BaseGL() {
@@ -49,21 +50,24 @@ class BaseGL {
         program_id = LoadShaders(vertex_shader_fname.c_str(), fragment_shader_fname.c_str());
     }
     
-    virtual void load_gl_objects() {};
-    
     virtual void draw();
+
+    // draw のループの中で呼ばれる関数
+    virtual void load_gl_objects() {};
     virtual void draw_gl() {};
     virtual void draw_imgui() {};
-    
     virtual void check_keyboard_and_mouse_input();
 
+    // callbacks
+    static void window_size_callback(GLFWwindow* window, int w, int h);
+    
   private:
     void init_gl();
     void init_imgui();
 
   public:
+    static int width, height;
     GLFWwindow *img_window;
-    int width = 1024, height = 768;
     GLuint program_id;
     // const char* glsl_version = "#version 460 core";
     const char* glsl_version="#version 330";

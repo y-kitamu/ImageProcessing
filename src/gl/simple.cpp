@@ -3,9 +3,10 @@
 
 namespace gl {
 
-float SimpleGL::scale = 1.0;
-float SimpleGL::offset_x = 0.0;
-float SimpleGL::offset_y = 0.0;
+float SimpleGL::scale = 1.0, SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0;
+double SimpleGL::prev_xpos = 0.0, SimpleGL::prev_ypos = 0.0;
+double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
+bool SimpleGL::is_left_button_pressed = false;
 
 
 void SimpleGL::load_gl_objects() {
@@ -13,6 +14,7 @@ void SimpleGL::load_gl_objects() {
     // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
     float rows = frame.rows, cols = frame.cols;
+    float aspect_ratio = rows / cols * width / height;
     // GL_TEXTURE_RECTANGLE の場合、uv 座標は Textureの ピクセルの座標の値と一致する。
     // x, y, u, v
     GLfloat position[4][4] = {
@@ -92,12 +94,31 @@ void SimpleGL::draw_imgui() {
 
 void SimpleGL::check_keyboard_and_mouse_input() {
     BaseGL::check_keyboard_and_mouse_input();
-    
-
 }
 
 void SimpleGL::scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
     scale += mouse_scroll_scale * yoffset;
 }
+
+void SimpleGL::mouse_callback(GLFWwindow * window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        is_left_button_pressed = true;
+        glfwGetCursorPos(window, &prev_xpos, &prev_ypos);
+    }
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        is_left_button_pressed = false;
+    }
+}
+
+void SimpleGL::cursor_callback(GLFWwindow * window, double x, double y) {
+    if (is_left_button_pressed) {
+        xpos = x; ypos = y;
+        offset_x += 2 * (xpos - prev_xpos) / width;
+        offset_y -= 2 * (ypos - prev_ypos) / height;
+        
+        prev_xpos = xpos; prev_ypos = ypos;
+    }
+}
+
 
 } // namespace gl

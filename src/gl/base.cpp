@@ -3,6 +3,8 @@
 
 namespace gl {
 
+int BaseGL::width = 1024, BaseGL::height = 768;
+
 void BaseGL::init_gl() {
     // initialize glfw
     if (!glfwInit()) {
@@ -87,6 +89,10 @@ void BaseGL::check_keyboard_and_mouse_input() {
     if (glfwGetKey(img_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(img_window, GLFW_TRUE);
     }
+}
+
+void BaseGL::window_size_callback(GLFWwindow* window, int w, int h) {
+    width = w; height = h;
 }
 
 }

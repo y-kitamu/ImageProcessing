@@ -13,6 +13,8 @@ class SimpleGL : public BaseGL {
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
         glfwSetScrollCallback(img_window, scroll_callback);
+        glfwSetMouseButtonCallback(img_window, mouse_callback);
+        glfwSetCursorPosCallback(img_window, cursor_callback);
     }
     
     void set_frame(const cv::Mat &mat) {
@@ -20,16 +22,21 @@ class SimpleGL : public BaseGL {
     }
 
   private:
+    // load_gl_object, draw_gl, draw_imgui, check_keyboard_and_mouse_input は draw の中で呼び出される
+    void load_gl_objects() override;
     void draw_gl() override;
     void draw_imgui() override;
-    void load_gl_objects() override;
-    
     void check_keyboard_and_mouse_input() override;
+    
     static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
+    static void mouse_callback(GLFWwindow *window, int button, int action, int mods);
+    static void cursor_callback(GLFWwindow * window, double xpos, double ypos);
     
   private:
     static float scale, offset_x, offset_y;  // 頂点の位置に関する変数
     static constexpr float mouse_scroll_scale = 0.05;
+    static double prev_xpos, prev_ypos, xpos, ypos;
+    static bool is_left_button_pressed;
     
     GLuint image;
     GLuint vao, vbo;
