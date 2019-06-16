@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2)
 
+set(CMAKE_C_COMPILER /usr/bin/clang)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+
 project(ImageProcessing)
 
 set(CMAKE_CXX_STANDARD 17)

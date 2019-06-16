@@ -48,6 +48,41 @@ void BaseGL::init_imgui() {
 }
 
 
+void BaseGL::draw() {
+    int framecount = 0;
+    double current, previous = glfwGetTime();
+
+    while (!glfwWindowShouldClose(img_window)) {
+        // Clear the screen
+        glfwMakeContextCurrent(img_window);
+        glfwPollEvents();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        load_gl_objects();
+
+        draw_gl();  // virtual : open gl objects の描画処理
+        draw_imgui();  // virtual : imgui の描画処理
+        check_keyboard_and_mouse_input();
+
+        // frame rate to 30 fps
+        current = glfwGetTime();
+        framecount++;
+        if (current - previous > 1) {
+            std::stringstream ss;
+            ss << "frame rate : " <<  framecount << " fps";
+            glfwSetWindowTitle(img_window, ss.str().c_str());
+            framecount = 0;
+            previous = current;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            
+        glClear(GL_DEPTH_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(img_window);
+    }
+}
+
+
 void BaseGL::check_keyboard_and_mouse_input() {
     if (glfwGetKey(img_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(img_window, GLFW_TRUE);

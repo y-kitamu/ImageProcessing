@@ -20,7 +20,6 @@ int main() {
     // cv::flip(img, img, 0);
 
     window.set_frame(img);
-
     window.draw();
     
 }
