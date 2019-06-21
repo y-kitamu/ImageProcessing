@@ -8,5 +8,7 @@ add_library(imgui
   imgui/examples/libs/gl3w/GL/gl3w.c)
 target_link_libraries(imgui ${CMAKE_DL_LIBS} ${OPENGL_LIBRARY})
 
-set(EXTERNAL_LIBS ${EXTERNAL_LIBS} imgui CACHE INTERNAL "")
+add_subdirectory(fmt)
+
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} imgui fmt::fmt CACHE INTERNAL "")
 # message("external libs : ${EXTERNAL_LIBS}")
