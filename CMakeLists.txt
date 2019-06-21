@@ -41,19 +41,20 @@ elseif (EXISTS "/home/kitamura/lib/boost/")
 endif()
 # message("BOOST_ROOT : ${BOOST_ROOT}")
 find_package(Boost REQUIRED COMPONENTS system filesystem)
+set(EXTERNAL_LIBS ${EXTERNAL_LIBS} Boost::system Boost::filesystem CACHE INTERNAL "")
 
 # ceres solver
 find_package(Ceres REQUIRED)
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
 
 # another submodules
-include_directories(AFTER ext ext/imgui ext/fmt/include)
-include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)
+include_directories(AFTER ext ext/imgui ext/fmt/include ext/cereal/include)
+include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)  # TODO : refactor 
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
 
 ### Add Subdirectory Libraries
-include_directories(AFTER src src/TGV)
+include_directories(AFTER src src/TGV src/cereal)
 add_subdirectory(src/gl)
 add_subdirectory(src/TGV)
 
