@@ -58,7 +58,7 @@ int main(int argc, char ** argv) {
 
     // analytical differnce
     CostFunction * cost_function = new QuadraticCostFunction();
-        
+
     problem.AddResidualBlock(cost_function, NULL, &x);
 
     Solver::Options options;

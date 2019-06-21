@@ -47,7 +47,7 @@ find_package(Ceres REQUIRED)
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
 
 # another submodules
-include_directories(AFTER ext ext/imgui)
+include_directories(AFTER ext ext/imgui ext/fmt/include)
 include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
