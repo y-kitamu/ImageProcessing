@@ -1,11 +1,11 @@
 #include "ceres/ceres.h"
 #include "fmt/format.h"
 
-using Ceres::Problem;
-using Ceres::CostFunction;
-using Ceres::AutoDiffCostFunction;
-using Ceres::Solver;
-using Ceres::Solve;
+using ceres::Problem;
+using ceres::CostFunction;
+using ceres::AutoDiffCostFunction;
+using ceres::Solver;
+using ceres::Solve;
 
 class BALProblem {
   public:
@@ -30,9 +30,9 @@ struct SnavelyReprojectionError {
     SnavelyReprojectionError(double observed_x, double obserbed_y)
         : observed_x(observed_x), observed_y(observed_y) {}
 
-    bool operator() (const T* const camera, const T* const point, T* residuals) const {
+    // bool operator() (const T* const camera, const T* const point, T* residuals) const {
         
-    }
+    // }
     
   private:
     double observed_x, observed_y;

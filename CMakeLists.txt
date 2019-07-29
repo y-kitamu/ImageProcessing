@@ -60,3 +60,8 @@ add_subdirectory(src/TGV)
 
 ### Add Executable
 add_subdirectory(snipets)
+
+# get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
+# foreach(SINGLE_PATH ${INCLUDE_PATH})
+#   message("${SINGLE_PATH}")
+# endforeach()
