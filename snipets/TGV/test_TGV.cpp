@@ -1,5 +1,5 @@
 #include <iostream>
-#include "TGV.hpp"
+#include "TGV/TGV.hpp"
 
 int main() {
     TGV::TGV tgv = TGV::TGV();

@@ -3,6 +3,9 @@
 
 #include "base.hpp"
 #include <opencv2/opencv.hpp>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 namespace gl {
 class SimpleGL : public BaseGL {
@@ -15,6 +18,8 @@ class SimpleGL : public BaseGL {
         glfwSetScrollCallback(img_window, scroll_callback);
         glfwSetMouseButtonCallback(img_window, mouse_callback);
         glfwSetCursorPosCallback(img_window, cursor_callback);
+        set_shader((fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.vert")).generic_string(),
+                   (fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.frag")).generic_string());
     }
     
     void set_frame(const cv::Mat &mat) {
