@@ -50,7 +50,7 @@ void SimpleGL::load_gl_objects() {
     glGenTextures(1, &image);
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteriv(GL_TEXTURE_RECTANGLE, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
@@ -58,6 +58,7 @@ void SimpleGL::load_gl_objects() {
 
 void SimpleGL::draw_gl() {
     // 切り出した画像をテクスチャに転送する
+    // TODO: FBO を使って高速化 https://stackoverflow.com/questions/3887636/how-to-manipulate-texture-content-on-the-fly/10702468#10702468
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
     glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
                  texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());

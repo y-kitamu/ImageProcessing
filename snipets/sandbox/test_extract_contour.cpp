@@ -17,7 +17,7 @@ int main(int argc, char ** argv) {
     
     cv::Mat raw = cv::imread(parser.get<std::string>("src_image"));
     fmt::print("col x row x channel = {} x {} x {}\n", raw.cols, raw.rows, raw.channels());
-    fmt::print("elemsize : {}, step : {}\n", raw.elemSize(), raw.step);
+    fmt::print("elemsize : {}, step : {}, flag: {}\n", raw.elemSize(), raw.step, raw.flags);
 
     cv::Mat img = raw;
     if (img.type() == CV_8UC3) {
