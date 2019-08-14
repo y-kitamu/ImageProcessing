@@ -3,6 +3,7 @@
 
 namespace gl {
 
+// static 変数のためここで代入
 float SimpleGL::scale = 1.0, SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0;
 double SimpleGL::prev_xpos = 0.0, SimpleGL::prev_ypos = 0.0;
 double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
@@ -13,12 +14,12 @@ void SimpleGL::load_gl_objects() {
     // 頂点データを準備
     // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
-    float rows = frame.rows, cols = frame.cols;
+    float rows = frames[frame_idx].rows, cols = frames[frame_idx].cols;
     float aspect_ratio = rows / cols * width / height;
     // GL_TEXTURE_RECTANGLE の場合、uv 座標は Textureの ピクセルの座標の値と一致する。
     // x, y, u, v
     GLfloat position[4][4] = {
-        {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, rows}, 
+        {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, rows},
         { 0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, cols, rows},
         { 0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, cols, 0.0f},
         {-0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, 0.0f, 0.0f},
@@ -48,18 +49,18 @@ void SimpleGL::load_gl_objects() {
     // テクスチャ
     glGenTextures(1, &image);
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
-    glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, cols, rows, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteriv(GL_TEXTURE_RECTANGLE, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 }
 
 void SimpleGL::draw_gl() {
     // 切り出した画像をテクスチャに転送する
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
-    glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, frame.rows,
-                    GL_BGR, GL_UNSIGNED_BYTE, frame.data);
+    glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
+                 texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
 
     // シェーダプログラムの使用開始
     glUseProgram(program_id);
@@ -84,10 +85,19 @@ void SimpleGL::draw_imgui() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Hello world!");
-    ImGui::Checkbox("demo window", &demo_window);
-    ImGui::Checkbox("another window", &another_window);
-    ImGui::End();
+    {
+        ImGui::Begin("frames");
+        bool is_changed = false;
+        for (int i = 0; i < frames.size(); i++) {
+            std::stringstream ss;
+            ss << i + 1;
+            is_changed |= ImGui::RadioButton(ss.str().c_str(), &frame_idx, i);
+        }
+        ImGui::End();
+        if (is_changed) {
+            set_texture_format();
+        }
+    }
     
     ImGui::Render();
 }

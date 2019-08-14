@@ -13,5 +13,6 @@ void main() {
     // color = vec4(1.0, 0.0, 0.0, 0.5);
     // color = texture(image, gl_FragCoord.xy); //
     color = texture(image, uv); //
+    // color = texture2d(image, uv);
 }
 
