@@ -54,9 +54,14 @@ add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
 
 ### Add Subdirectory Libraries
-include_directories(AFTER src src/TGV src/cereal)
+include_directories(AFTER src)
 add_subdirectory(src/gl)
 add_subdirectory(src/TGV)
 
 ### Add Executable
 add_subdirectory(snipets)
+
+# get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
+# foreach(SINGLE_PATH ${INCLUDE_PATH})
+#   message("${SINGLE_PATH}")
+# endforeach()

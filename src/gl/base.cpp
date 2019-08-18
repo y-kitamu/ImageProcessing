@@ -87,7 +87,7 @@ void BaseGL::draw() {
 
 void BaseGL::check_keyboard_and_mouse_input() {
     if (glfwGetKey(img_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(img_window, GLFW_TRUE);
+        glfwSetWindowShouldClose(img_window, true);
     }
 }
 

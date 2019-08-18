@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 #include <ostream>
 #include <istream>
-#include "eigen.hpp"
+#include "cereal/eigen.hpp"
 
 namespace fs = boost::filesystem;
 

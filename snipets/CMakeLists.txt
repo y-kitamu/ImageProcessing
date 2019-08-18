@@ -1,1 +1,1 @@
-ADD_SUBDIRS(uvc_video)
+ADD_SUBDIRS()
