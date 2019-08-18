@@ -35,4 +35,5 @@ int main() {
         ar(output_id);
         std::cout << output_id << std::endl;
     }
+
 }
