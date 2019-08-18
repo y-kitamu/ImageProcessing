@@ -2,10 +2,11 @@
 #define __GL_SIMPLE_HPP__
 
 #include "base.hpp"
+#include <Eigen/Eigen>
 #include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
 
-#include <fmt/format.h>
+#include "line.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -14,6 +15,7 @@ class SimpleGL : public BaseGL {
     /*
      * 画像を一枚表示する class
      */
+    // TODO : refactor function name. From snake_case to camelCase
   public:
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
@@ -26,23 +28,7 @@ class SimpleGL : public BaseGL {
     
     void set_frame(const cv::Mat &mat) {
         frames.emplace_back(mat);
-        set_texture_format();
-    }
-
-    void set_texture_format() {
-        if (frames[frame_idx].type() == CV_8UC1) {
-            texture_format = GL_RED;
-            swizzle_mask[0] = GL_RED;
-            swizzle_mask[1] = GL_RED;
-            swizzle_mask[2] = GL_RED;
-            swizzle_mask[3] = GL_ZERO;
-        } else if (frames[frame_idx].type() == CV_8UC3) {
-            texture_format = GL_BGR;
-            swizzle_mask[0] = GL_RED;
-            swizzle_mask[1] = GL_GREEN;
-            swizzle_mask[2] = GL_BLUE;
-            swizzle_mask[3] = GL_ZERO;
-        }
+        setTextureFormat();
     }
 
   private:
@@ -51,6 +37,11 @@ class SimpleGL : public BaseGL {
     void draw_gl() override;
     void draw_imgui() override;
     void check_keyboard_and_mouse_input() override;
+
+    void setTextureFormat();
+
+    Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
+    Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
     
     static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
     static void mouse_callback(GLFWwindow *window, int button, int action, int mods);
@@ -70,8 +61,6 @@ class SimpleGL : public BaseGL {
     int vertices;  // 頂点の数
     GLenum texture_format = GL_BGR;
     GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ZERO};
-
-    bool demo_window, another_window;
 };
 
 } // namespace gl

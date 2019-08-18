@@ -96,7 +96,7 @@ void SimpleGL::draw_imgui() {
         }
         ImGui::End();
         if (is_changed) {
-            set_texture_format();
+            setTextureFormat();
         }
     }
     
@@ -131,5 +131,30 @@ void SimpleGL::cursor_callback(GLFWwindow * window, double x, double y) {
     }
 }
 
+void SimpleGL::setTextureFormat() {
+    // gray scale の画像と color 画像を切り替え
+    if (frames[frame_idx].type() == CV_8UC1) {
+        texture_format = GL_RED;
+        swizzle_mask[0] = GL_RED;
+        swizzle_mask[1] = GL_RED;
+        swizzle_mask[2] = GL_RED;
+        swizzle_mask[3] = GL_ZERO;
+    } else if (frames[frame_idx].type() == CV_8UC3) {
+        texture_format = GL_BGR;
+        swizzle_mask[0] = GL_RED;
+        swizzle_mask[1] = GL_GREEN;
+        swizzle_mask[2] = GL_BLUE;
+        swizzle_mask[3] = GL_ZERO;
+    }
+}
+
+
+Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt) {
+    
+}
+
+Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt) {
+    
+}
 
 } // namespace gl

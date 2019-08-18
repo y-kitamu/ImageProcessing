@@ -11,39 +11,30 @@
 namespace fs = boost::filesystem;
 
 int main(int argc, char ** argv) {
-
-    cmdline::parser parser;
-    parser.add<std::string>("src", 's', "src image filename", false, "/home/kitamura/work/ImageProcessing/data/lena.jpg");
-    parser.add<std::string>("shader", 'd', "shader directory", false, "/home/kitamura/work/ImageProcessing/src/gl/shader/");
-    parser.parse_check(argc, argv);
+    // 環境によってはうまく動作しない？
+    // 正方形の画像はうまく表示されたけど、長方形だと変になる
+    // 画像サイズが大きいときに遅くなる
+    // gpu driver によって違う？
     
-    // std::string vert_shader = "/home/kitamura/work/opencv/src/gl/shader/simple_texture.vert";
-    // std::string frag_shader = "/home/kitamura/work/opencv/src/gl/shader/simple_texture.frag";
-    
-    // std::string vert_shader = parser.get<std::string>("shader") + "simple_texture.vert";
-    // std::string frag_shader = parser.get<std::string>("shader") + "simple_texture.frag";
-
-    // auto check_shader_exists = [] (std::string shader_filename) {
-    //     std::ifstream ifs(shader_filename);
-    //     return ifs.is_open();
-    // };
-
-    // if (!check_shader_exists(vert_shader) || !check_shader_exists(frag_shader)) {
-    //     fmt::print("shader file does not exist\n");
-    //     return -1;
-    // }
-        
-    gl::SimpleGL window = gl::SimpleGL();
-    // window.set_shader(vert_shader, frag_shader);
-
-    // cv::Mat img = cv::imread("/home/kitamura/work/opencv/data/img/Lenna.png");
-    // cv::Mat img = cv::imread(parser.get<std::string>("src"));
     std::string filename = (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
-    fmt::print("filename : {}\n", filename);
-    cv::Mat img = cv::imread(filename);
-    // std::cout << img.size << std::endl;
-    // cv::flip(img, img, 0);
+    std::string shader_dir = (fs::path(__FILE__).parent_path() / fs::path("../src/gl/shader")).generic_string();
+    
+    cmdline::parser parser;
+    parser.add<std::string>("src", 's', "src image filename", false, filename);
+    parser.add<std::string>("shader", 'd', "shader directory", false, shader_dir);
+    parser.parse_check(argc, argv);
 
+    filename = parser.get<std::string>("src");
+    shader_dir = parser.get<std::string>("shader");
+    
+    cv::Mat img = cv::imread(filename);
+    
+    fmt::print("filename : {}, shader_dir : {}\n", filename, shader_dir);
+    fmt::print("image (width x height) : {} x {}\n", img.cols, img.rows);
+    
+    gl::SimpleGL window = gl::SimpleGL();
+
+    window.set_frame(img);
     window.set_frame(img);
     window.draw();
 }
