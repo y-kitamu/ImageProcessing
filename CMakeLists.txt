@@ -7,7 +7,7 @@ project(ImageProcessing)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS "-Wall -fPIC -DNDEBUG -lglog")
+set(CMAKE_CXX_FLAGS "-Wall -fPIC -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
@@ -56,6 +56,9 @@ include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)  # TO
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
 
+# system libraries
+include_directories(SYSTEM /usr/include/eigen3)  # docker 環境だとここに Eigen の header file があった
+
 ### Add Subdirectory Libraries
 include_directories(AFTER src)
 add_subdirectory(src/gl)
@@ -64,7 +67,13 @@ add_subdirectory(src/TGV)
 ### Add Executable
 add_subdirectory(snipets)
 
+### Print Variables
+# include path
 # get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
 # foreach(SINGLE_PATH ${INCLUDE_PATH})
 #   message("${SINGLE_PATH}")
 # endforeach()
+
+# link libraries
+# message("Libraries : ${LIBRARIES}")
+# message("external libs : ${EXTERNAL_LIBS}")

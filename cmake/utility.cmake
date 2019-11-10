@@ -29,7 +29,7 @@ ENDMACRO()
 
 
 MACRO(ADD_LIB)
-  FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+  FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/[a-z]*.cpp")
   if (file_list)
     add_library(${module_name} ${file_list})
     set(LIBRARIES ${LIBRARIES} ${module_name} CACHE INTERNAL "")

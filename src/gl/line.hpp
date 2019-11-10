@@ -7,8 +7,7 @@ class Line {
     /*
      * debug 画面に直線を描画する class
      */
-    
-    
+    Line();
 };
 
 } // namespace gl
