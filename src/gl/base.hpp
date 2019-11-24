@@ -30,10 +30,10 @@ class BaseGL {
      */
   public:
     BaseGL() {
-        init_gl();
-        init_imgui();
+        initGL();
+        initImgui();
 
-        glfwSetWindowSizeCallback(img_window, window_size_callback); // callback を基底クラスと派生クラスにバラバラにおいていい？
+        glfwSetWindowSizeCallback(img_window, windowSizeCallback); // callback を基底クラスと派生クラスにバラバラにおいていい？
     }
 
     ~BaseGL() {
@@ -46,27 +46,31 @@ class BaseGL {
         return;
     }
     
-    void set_shader(std::string vertex_shader_fname, std::string fragment_shader_fname) {
+    void setShader(std::string vertex_shader_fname, std::string fragment_shader_fname) {
         program_id = LoadShaders(vertex_shader_fname.c_str(), fragment_shader_fname.c_str());
     }
     
     virtual void draw();
 
     // draw のループの中で呼ばれる関数
-    virtual void load_gl_objects() {};
-    virtual void draw_gl() {};
-    virtual void draw_imgui() {};
-    virtual void check_keyboard_and_mouse_input();
+    virtual void loadGLObjects() {};
+    virtual void drawGL() {};
+    virtual void drawImgui() {};
+    virtual void checkKeyboardAndMouseInput();
 
     // callbacks
-    static void window_size_callback(GLFWwindow* window, int w, int h);
+    static void windowSizeCallback(GLFWwindow* window, int w, int h);
     
   private:
-    void init_gl();
-    void init_imgui();
+    void initGL();
+    void initImgui();
+    // debug call back function
+    static void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, 
+                                       GLsizei length, const GLchar *message, void *userParam);
 
   public:
     static int width, height;
+    static float width_inv, height_inv;
     GLFWwindow *img_window;
     GLuint program_id;
     // const char* glsl_version = "#version 460 core";

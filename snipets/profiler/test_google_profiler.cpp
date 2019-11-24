@@ -24,9 +24,9 @@ int func_b() {
 int main(int argc, char ** argv) {
     /*
      * Debug モードで compile -> 実行すると ProfilerStart() の引数で指定したファイルに
-     * プロファイルが書き込まれる.
+     * プロファイルが書き込まれる.terminal で
      * google-pprof <実行ファイル> <profiler file>
-     * で pprof のコマンドラインが立ち上がる
+     * とすると、 pprof のコマンドラインが立ち上がる
      * callgrind とか出力形式をしていすると、結果が見れる。
      */
     

@@ -11,9 +11,9 @@ class LightningGL : public BaseGL {
      * 光の量、位置を変化させる class
      */
   public:
-    void load_gl_objects() override;
-    void draw_gl() override;
-    void draw_imgui() override;
+    void loadGLObjects() override;
+    void drawGL() override;
+    void drawImgui() override;
 
   public:
     GLuint vao;

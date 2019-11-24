@@ -2,7 +2,7 @@
 
 namespace gl {
 
-void LightningGL::load_gl_objects() {
+void LightningGL::loadGLObjects() {
     /*
      * とりあえず、立方体を描画する
      */
@@ -106,7 +106,7 @@ void LightningGL::load_gl_objects() {
     glBindVertexArray(0);
 }
 
-void LightningGL::draw_gl() {
+void LightningGL::drawGL() {
     glUseProgram(program_id);
 
     glBindVertexArray(vao);
@@ -116,7 +116,7 @@ void LightningGL::draw_gl() {
     glUseProgram(0);
 }
 
-void LightningGL::draw_imgui() {
+void LightningGL::drawImgui() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();

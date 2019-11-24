@@ -5,6 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
+#include <glog/logging.h>
+#include <gperftools/profiler.h>
 
 #include "gl/simple.hpp"
 
@@ -15,9 +17,21 @@ int main(int argc, char ** argv) {
     // 正方形の画像はうまく表示されたけど、長方形だと変になる
     // 画像サイズが大きいときに遅くなる
     // gpu driver によって違う？
+    google::InitGoogleLogging(argv[0]);
+    google::InstallFailureSignalHandler();
+
+    fs::path prof_dir("./prof/");
+    if (!fs::exists(prof_dir)) {
+        fs::create_directory(prof_dir);
+    }
     
-    std::string filename = (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
-    std::string shader_dir = (fs::path(__FILE__).parent_path() / fs::path("../src/gl/shader")).generic_string();
+    ProfilerStart(
+        (prof_dir / fs::path(fs::basename(fs::path(__FILE__)) + ".prof")).generic_string().c_str());
+    
+    std::string filename =
+        (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
+    std::string shader_dir =
+        (fs::path(__FILE__).parent_path() / fs::path("../src/gl/shader")).generic_string();
     
     cmdline::parser parser;
     parser.add<std::string>("src", 's', "src image filename", false, filename);
@@ -37,4 +51,6 @@ int main(int argc, char ** argv) {
     window.set_frame(img);
     window.set_frame(img);
     window.draw();
+
+    ProfilerStop();
 }

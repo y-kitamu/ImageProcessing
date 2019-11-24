@@ -19,10 +19,10 @@ class SimpleGL : public BaseGL {
   public:
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
-        glfwSetScrollCallback(img_window, scroll_callback);
-        glfwSetMouseButtonCallback(img_window, mouse_callback);
-        glfwSetCursorPosCallback(img_window, cursor_callback);
-        set_shader((fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.vert")).generic_string(),
+        glfwSetScrollCallback(img_window, scrollCallback);
+        glfwSetMouseButtonCallback(img_window, mouseCallback);
+        glfwSetCursorPosCallback(img_window, cursorCallback);
+        setShader((fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.vert")).generic_string(),
                    (fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.frag")).generic_string());
     }
     
@@ -33,19 +33,19 @@ class SimpleGL : public BaseGL {
 
   private:
     // load_gl_object, draw_gl, draw_imgui, check_keyboard_and_mouse_input は draw の中で呼び出される
-    void load_gl_objects() override;
-    void draw_gl() override;
-    void draw_imgui() override;
-    void check_keyboard_and_mouse_input() override;
+    void loadGLObjects() override;
+    void drawGL() override;
+    void drawImgui() override;
+    void checkKeyboardAndMouseInput() override;
 
     void setTextureFormat();
 
     Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
     Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
     
-    static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
-    static void mouse_callback(GLFWwindow *window, int button, int action, int mods);
-    static void cursor_callback(GLFWwindow * window, double xpos, double ypos);
+    static void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
+    static void mouseCallback(GLFWwindow *window, int button, int action, int mods);
+    static void cursorCallback(GLFWwindow * window, double xpos, double ypos);
     
   private:
     static float scale, offset_x, offset_y;  // 頂点の位置に関する変数

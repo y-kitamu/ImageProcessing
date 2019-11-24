@@ -10,7 +10,7 @@ double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
 bool SimpleGL::is_left_button_pressed = false;
 
 
-void SimpleGL::load_gl_objects() {
+void SimpleGL::loadGLObjects() {
     // 頂点データを準備
     // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
@@ -50,13 +50,13 @@ void SimpleGL::load_gl_objects() {
     glGenTextures(1, &image);
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteriv(GL_TEXTURE_RECTANGLE, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 }
 
-void SimpleGL::draw_gl() {
+void SimpleGL::drawGL() {
     // 切り出した画像をテクスチャに転送する
     // TODO: FBO を使って高速化 https://stackoverflow.com/questions/3887636/how-to-manipulate-texture-content-on-the-fly/10702468#10702468
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
@@ -81,7 +81,7 @@ void SimpleGL::draw_gl() {
     glUseProgram(0);
 }
 
-void SimpleGL::draw_imgui() {
+void SimpleGL::drawImgui() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -103,15 +103,15 @@ void SimpleGL::draw_imgui() {
     ImGui::Render();
 }
 
-void SimpleGL::check_keyboard_and_mouse_input() {
-    BaseGL::check_keyboard_and_mouse_input();
+void SimpleGL::checkKeyboardAndMouseInput() {
+    BaseGL::checkKeyboardAndMouseInput();
 }
 
-void SimpleGL::scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
+void SimpleGL::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
     scale += mouse_scroll_scale * yoffset;
 }
 
-void SimpleGL::mouse_callback(GLFWwindow * window, int button, int action, int mods) {
+void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         is_left_button_pressed = true;
         glfwGetCursorPos(window, &prev_xpos, &prev_ypos);
@@ -121,10 +121,10 @@ void SimpleGL::mouse_callback(GLFWwindow * window, int button, int action, int m
     }
 }
 
-void SimpleGL::cursor_callback(GLFWwindow * window, double x, double y) {
+void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
     if (is_left_button_pressed) {
         xpos = x; ypos = y;
-        offset_x += 2 * (xpos - prev_xpos) / width;
+        offset_x += 2 * (xpos - prev_xpos) * width_inv;
         offset_y -= 2 * (ypos - prev_ypos) / height;
         
         prev_xpos = xpos; prev_ypos = ypos;
