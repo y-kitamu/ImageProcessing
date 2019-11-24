@@ -14,6 +14,8 @@ using namespace std;
 
 #include "shader.hpp"
 
+namespace gl {
+
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
 
 	// Create the shaders
@@ -108,4 +110,4 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 	return ProgramID;
 }
 
-
+}
