@@ -16,12 +16,11 @@ void SimpleGL::loadGLObjects() {
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
     float rows = frames[frame_idx].rows, cols = frames[frame_idx].cols;
     float aspect_ratio = rows / cols * width / height;
-    // GL_TEXTURE_RECTANGLE の場合、uv 座標は Textureの ピクセルの座標の値と一致する。
-    // x, y, u, v
     GLfloat position[4][4] = {
-        {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, rows},
-        { 0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, cols, rows},
-        { 0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, cols, 0.0f},
+        // [x, y, u, v]
+        {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, 1.0f},
+        { 0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 1.0f, 1.0f},
+        { 0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, 1.0f, 0.0f},
         {-0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, 0.0f, 0.0f},
     };
     vertices = sizeof(position) / sizeof(position[0]);
@@ -42,33 +41,35 @@ void SimpleGL::loadGLObjects() {
     index = 1;
     glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (GLvoid *)(size * sizeof(GLfloat)));
     glEnableVertexAttribArray(index);
-
+    
     glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
     glBindVertexArray(0);  // vao の bind を解除
 
     // テクスチャ
     glGenTextures(1, &image);
-    glBindTexture(GL_TEXTURE_RECTANGLE, image);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteriv(GL_TEXTURE_RECTANGLE, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
+    glBindTexture(GL_TEXTURE_2D, image);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_TEXTURE_2D の場合 GL_LINEAR_MIPMAP_LINEAR だと真っ黒になった
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 }
 
 void SimpleGL::drawGL() {
     // 切り出した画像をテクスチャに転送する
     // TODO: FBO を使って高速化 https://stackoverflow.com/questions/3887636/how-to-manipulate-texture-content-on-the-fly/10702468#10702468
-    glBindTexture(GL_TEXTURE_RECTANGLE, image);
-    glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
+    glBindTexture(GL_TEXTURE_2D, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
                  texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
 
     // シェーダプログラムの使用開始
     glUseProgram(program_id);
+    // auto texLocation = glGetUniformLocation(program_id, "image");
+    // glUniform1i(texLocation, 0);
 
     // テクスチャユニットとテクスチャの指定
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_RECTANGLE, image);
+    glBindTexture(GL_TEXTURE_2D, image);
 
     // 描画に使う頂点配列オブジェクトの指定
     glBindVertexArray(vao);
