@@ -26,19 +26,22 @@ class SimpleGL : public BaseGL {
                    (fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.frag")).generic_string());
     }
     
-    void set_frame(const cv::Mat &mat) {
+    void addFrame(const cv::Mat &mat) {
         frames.emplace_back(mat);
-        setTextureFormat();
     }
 
   private:
+    // draw() の最初に呼び出される
+    void initDraw() override {
+        setTexture();
+    }
     // load_gl_object, draw_gl, draw_imgui, check_keyboard_and_mouse_input は draw の中で呼び出される
     void loadGLObjects() override;
     void drawGL() override;
     void drawImgui() override;
     void checkKeyboardAndMouseInput() override;
 
-    void setTextureFormat();
+    void setTexture();
 
     Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
     Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
@@ -54,7 +57,7 @@ class SimpleGL : public BaseGL {
     static bool is_left_button_pressed;
     
     GLuint image;
-    GLuint vao, vbo;
+    GLuint vao, vbo, fbo;
     
     std::vector<cv::Mat> frames;
     int frame_idx = 0;  // 表示する画像の index

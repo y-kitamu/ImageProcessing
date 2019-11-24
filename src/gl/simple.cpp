@@ -44,31 +44,17 @@ void SimpleGL::loadGLObjects() {
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
     glBindVertexArray(0);  // vao の bind を解除
-
-    // テクスチャ
-    glGenTextures(1, &image);
-    glBindTexture(GL_TEXTURE_2D, image);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_TEXTURE_2D の場合 GL_LINEAR_MIPMAP_LINEAR だと真っ黒になった
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 }
 
 void SimpleGL::drawGL() {
     // 切り出した画像をテクスチャに転送する
     // TODO: FBO を使って高速化 https://stackoverflow.com/questions/3887636/how-to-manipulate-texture-content-on-the-fly/10702468#10702468
-    glBindTexture(GL_TEXTURE_2D, image);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
-                 texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
 
     // シェーダプログラムの使用開始
     glUseProgram(program_id);
-    // auto texLocation = glGetUniformLocation(program_id, "image");
-    // glUniform1i(texLocation, 0);
 
     // テクスチャユニットとテクスチャの指定
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, image);
 
     // 描画に使う頂点配列オブジェクトの指定
@@ -97,7 +83,7 @@ void SimpleGL::drawImgui() {
         }
         ImGui::End();
         if (is_changed) {
-            setTextureFormat();
+            setTexture();
         }
     }
     
@@ -132,7 +118,7 @@ void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
     }
 }
 
-void SimpleGL::setTextureFormat() {
+void SimpleGL::setTexture() {
     // gray scale の画像と color 画像を切り替え
     if (frames[frame_idx].type() == CV_8UC1) {
         texture_format = GL_RED;
@@ -147,6 +133,19 @@ void SimpleGL::setTextureFormat() {
         swizzle_mask[2] = GL_BLUE;
         swizzle_mask[3] = GL_ZERO;
     }
+
+    // テクスチャ
+    glGenTextures(1, &image);
+    glBindTexture(GL_TEXTURE_2D, image);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_TEXTURE_2D の場合 GL_LINEAR_MIPMAP_LINEAR だと真っ黒になった
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
+                 texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 

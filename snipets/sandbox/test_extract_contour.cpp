@@ -28,9 +28,9 @@ int main(int argc, char ** argv) {
     cv::threshold(img, thresh, 0, 0, cv::THRESH_OTSU);
 
     gl::SimpleGL window = gl::SimpleGL();
-    window.set_frame(raw);
-    window.set_frame(img);
-    window.set_frame(thresh);
+    window.addFrame(raw);
+    window.addFrame(img);
+    window.addFrame(thresh);
     window.draw();
     // gl::SimpleGL window = gl::SimpleGL();
     // window.set_frame(img);

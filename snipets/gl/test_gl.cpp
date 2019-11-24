@@ -48,8 +48,8 @@ int main(int argc, char ** argv) {
     
     gl::SimpleGL window = gl::SimpleGL();
 
-    window.set_frame(img);
-    window.set_frame(img);
+    window.addFrame(img);
+    window.addFrame(img);
     window.draw();
 
     ProfilerStop();

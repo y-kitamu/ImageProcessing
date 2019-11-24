@@ -63,13 +63,14 @@ void BaseGL::initImgui() {
 
 
 void BaseGL::draw() {
+    initDraw();
+
     int framecount = 0;
     double current, previous = glfwGetTime();
 
     while (!glfwWindowShouldClose(img_window)) {
         // Clear the screen
         glfwMakeContextCurrent(img_window);
-        glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         loadGLObjects();
@@ -95,6 +96,7 @@ void BaseGL::draw() {
         glClear(GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(img_window);
+        glfwPollEvents();
     }
 }
 

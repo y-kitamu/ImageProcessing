@@ -51,6 +51,7 @@ class BaseGL {
     }
     
     virtual void draw();
+    virtual void initDraw() {};
 
     // draw のループの中で呼ばれる関数
     virtual void loadGLObjects() {};
