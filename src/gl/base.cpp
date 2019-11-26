@@ -91,7 +91,7 @@ void BaseGL::draw() {
         }
         
         // frame rate to 30 fps
-        //std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
             
         glClear(GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

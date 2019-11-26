@@ -57,13 +57,14 @@ class SimpleGL : public BaseGL {
     static bool is_left_button_pressed;
     
     GLuint image;
-    GLuint vao, vbo, fbo;
+    GLuint vao, vbo;
     
     std::vector<cv::Mat> frames;
     int frame_idx = 0;  // 表示する画像の index
     int vertices;  // 頂点の数
     GLenum texture_format = GL_BGR;
     GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ZERO};
+    Eigen::Vector2d cursor_img_pt;
 };
 
 } // namespace gl

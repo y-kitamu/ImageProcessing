@@ -4,7 +4,8 @@
 namespace gl {
 
 // static 変数のためここで代入
-float SimpleGL::scale = 1.0, SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0;
+float SimpleGL::scale = 1.0;
+float SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0; // 画像の中心の window の中心に対する offset
 double SimpleGL::prev_xpos = 0.0, SimpleGL::prev_ypos = 0.0;
 double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
 bool SimpleGL::is_left_button_pressed = false;
@@ -74,6 +75,21 @@ void SimpleGL::drawImgui() {
     ImGui::NewFrame();
 
     {
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Save")) {
+                    
+                }
+                if (ImGui::MenuItem("Load")) {
+                    
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+    }
+    
+    {
         ImGui::Begin("frames");
         bool is_changed = false;
         for (int i = 0; i < frames.size(); i++) {
@@ -85,6 +101,13 @@ void SimpleGL::drawImgui() {
         if (is_changed) {
             setTexture();
         }
+    }
+
+    {
+        cursor_img_pt = glCoord2ImageCoord(Eigen::Vector2d(xpos, ypos));
+        // if (is_left_button_pressed) {
+        //     std::cout << xpos << " , " << ypos << " , " << cursor_img_pt.transpose() << std::endl;
+        // }
     }
     
     ImGui::Render();
@@ -109,10 +132,10 @@ void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mo
 }
 
 void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
+    xpos = x; ypos = y;
     if (is_left_button_pressed) {
-        xpos = x; ypos = y;
         offset_x += 2 * (xpos - prev_xpos) * width_inv;
-        offset_y -= 2 * (ypos - prev_ypos) / height;
+        offset_y -= 2 * (ypos - prev_ypos) * height_inv;
         
         prev_xpos = xpos; prev_ypos = ypos;
     }
@@ -149,12 +172,22 @@ void SimpleGL::setTexture() {
 }
 
 
-Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt) {
+Eigen::Vector2d SimpleGL::imageCoord2GLCoord(Eigen::Vector2d img_pt) {
     
 }
 
-Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt) {
+Eigen::Vector2d SimpleGL::glCoord2ImageCoord(Eigen::Vector2d gl_pt) {
+    /*
+     * window の coordinate (左上(0, 0)、右下(window_width, window_height)) から
+     * Image coordinate (画像左上(0, 0), 画像右下(image_width, image_height))
+     */
+    int image_width = frames[frame_idx].cols, image_height = frames[frame_idx].rows;
+    Eigen::Vector2d img_pt;
+    float aspect_ratio = 1.0f * image_height / image_width * width / height;
     
+    img_pt.x() = (2 * gl_pt.x() * width_inv - 1.0f - offset_x + scale * 0.5) * image_width / scale;
+    img_pt.y() = (2 * gl_pt.y() * height_inv - 1.0f + offset_y + scale * 0.5 * aspect_ratio) * height / width * image_width / scale;
+    return img_pt;
 }
 
 } // namespace gl
