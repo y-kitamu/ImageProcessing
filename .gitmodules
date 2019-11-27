@@ -13,3 +13,6 @@
 [submodule "ext/cereal"]
 	path = ext/cereal
 	url = https://github.com/USCiLab/cereal.git
+[submodule "ext/nameof"]
+	path = ext/nameof
+	url = https://github.com/Neargye/nameof.git
