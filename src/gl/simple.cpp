@@ -1,4 +1,5 @@
 #include "simple.hpp"
+#include <fmt/format.h>
 
 
 namespace gl {
@@ -82,6 +83,20 @@ void SimpleGL::drawImgui() {
                 }
                 if (ImGui::MenuItem("Load")) {
                     
+                }
+                if (ImGui::MenuItem("Open file")) {
+                    char c_filename[1024];
+                    FILE *fp = popen("zenity --file-selection", "r");
+                    fgets(c_filename, 1024, fp);
+                    pclose(fp);
+                    std::string filename(c_filename);
+                    filename.erase(std::remove(filename.begin(), filename.end(), '\n'), filename.end());
+                    cv::Mat img = cv::imread(filename);
+                    if (img.data == nullptr) {
+                        fmt::print("{} is not a valid image file.\n", filename);
+                    } else {
+                        addFrame(img);
+                    }
                 }
                 ImGui::EndMenu();
             }

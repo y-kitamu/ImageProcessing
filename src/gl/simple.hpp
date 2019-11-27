@@ -1,6 +1,8 @@
 #ifndef __GL_SIMPLE_HPP__
 #define __GL_SIMPLE_HPP__
 
+#include <stdio.h>
+
 #include "base.hpp"
 #include <Eigen/Eigen>
 #include <opencv2/opencv.hpp>
