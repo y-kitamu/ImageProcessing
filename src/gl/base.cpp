@@ -54,8 +54,8 @@ void BaseGL::initImgui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO & io = ImGui::GetIO(); (void) io;
-    ImGui::StyleColorsDark();
-    ImGui::StyleColorsClassic();
+    
+    imgui_theme.setCurrentTheme();
 
     ImGui_ImplGlfw_InitForOpenGL(img_window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);

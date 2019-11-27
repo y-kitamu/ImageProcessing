@@ -51,7 +51,7 @@ find_package(Ceres REQUIRED)
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
 
 # another submodules
-include_directories(AFTER ext ext/imgui ext/fmt/include ext/cereal/include)
+include_directories(AFTER ext ext/imgui ext/fmt/include ext/cereal/include ext/nameof/include)
 include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)  # TODO : refactor 
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})

@@ -17,6 +17,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.hpp"
+#include "imgui_style_color.hpp"
 
 
 namespace gl {
@@ -76,6 +77,9 @@ class BaseGL {
     GLuint program_id;
     // const char* glsl_version = "#version 460 core";
     const char* glsl_version="#version 330";
+    
+  protected:
+    ImGuiStyleColor imgui_theme;
 };
 
 } // namespace gl

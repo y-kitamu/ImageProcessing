@@ -71,6 +71,7 @@ void SimpleGL::drawGL() {
 }
 
 void SimpleGL::drawImgui() {
+    // TODO : base.cpp に移す
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -100,6 +101,15 @@ void SimpleGL::drawImgui() {
                 }
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Style")) {
+                auto themes = imgui_theme.getAllThemeNames();
+                for (auto && theme : themes) {
+                    if (ImGui::MenuItem(theme.c_str())) {
+                        imgui_theme.setCurrentTheme(theme);
+                    }
+                }
+                ImGui::EndMenu();
+            }
             ImGui::EndMainMenuBar();
         }
     }
@@ -118,6 +128,10 @@ void SimpleGL::drawImgui() {
         }
     }
 
+    {
+        // ImGui::SetNextWindowPos(ImVec2(0, GetIO().DisplaySize.y - height), 0);
+        // ImGui::SetNextWindowSize(ImVec2(GetIO().DisplaySize.x, 0), 0);
+    }
     {
         cursor_img_pt = glCoord2ImageCoord(Eigen::Vector2d(xpos, ypos));
         // if (is_left_button_pressed) {
