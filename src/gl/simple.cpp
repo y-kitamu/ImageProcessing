@@ -129,14 +129,16 @@ void SimpleGL::drawImgui() {
     }
 
     {
-        // ImGui::SetNextWindowPos(ImVec2(0, GetIO().DisplaySize.y - height), 0);
-        // ImGui::SetNextWindowSize(ImVec2(GetIO().DisplaySize.x, 0), 0);
-    }
-    {
         cursor_img_pt = glCoord2ImageCoord(Eigen::Vector2d(xpos, ypos));
-        // if (is_left_button_pressed) {
-        //     std::cout << xpos << " , " << ypos << " , " << cursor_img_pt.transpose() << std::endl;
-        // }
+        ImGui::SetNextWindowPos(
+            ImVec2(0, ImGui::GetIO().DisplaySize.y - ImGui::GetTextLineHeightWithSpacing() * 2), 0);
+        ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0), 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
+        if (ImGui::Begin("", nullptr, (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                                       ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar))) {
+            ImGui::Text("(x, y) = (%f, %f)", cursor_img_pt.x(), cursor_img_pt.y());
+        }
     }
     
     ImGui::Render();
