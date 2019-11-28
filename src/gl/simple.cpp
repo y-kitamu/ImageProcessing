@@ -5,11 +5,12 @@
 namespace gl {
 
 // static 変数のためここで代入
-float SimpleGL::scale = 1.0;
+int SimpleGL::image_width = 0, SimpleGL::image_height = 0;
+float SimpleGL::scale = 1.0f;
 float SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0; // 画像の中心の window の中心に対する offset
 double SimpleGL::prev_xpos = 0.0, SimpleGL::prev_ypos = 0.0;
 double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
-bool SimpleGL::is_left_button_pressed = false;
+bool SimpleGL::is_left_button_pressed = false, SimpleGL::is_pressed_in_image = false;
 
 
 void SimpleGL::loadGLObjects() {
@@ -133,11 +134,9 @@ void SimpleGL::drawImgui() {
         ImGui::SetNextWindowPos(
             ImVec2(0, ImGui::GetIO().DisplaySize.y - ImGui::GetTextLineHeightWithSpacing() * 2), 0);
         ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0), 0);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
         if (ImGui::Begin("", nullptr, (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar))) {
-            ImGui::Text("(x, y) = (%f, %f)", cursor_img_pt.x(), cursor_img_pt.y());
+            ImGui::Text("(x, y) = (%.1f, %.1f)", cursor_img_pt.x(), cursor_img_pt.y());
         }
     }
     
@@ -153,18 +152,21 @@ void SimpleGL::scrollCallback(GLFWwindow * window, double xoffset, double yoffse
 }
 
 void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mods) {
+        
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         is_left_button_pressed = true;
+        is_pressed_in_image = isPointInImage(xpos, ypos);
         glfwGetCursorPos(window, &prev_xpos, &prev_ypos);
     }
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         is_left_button_pressed = false;
+        is_pressed_in_image = false;
     }
 }
 
 void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
     xpos = x; ypos = y;
-    if (is_left_button_pressed) {
+    if (is_left_button_pressed && is_pressed_in_image) {
         offset_x += 2 * (xpos - prev_xpos) * width_inv;
         offset_y -= 2 * (ypos - prev_ypos) * height_inv;
         
@@ -188,6 +190,9 @@ void SimpleGL::setTexture() {
         swizzle_mask[3] = GL_ZERO;
     }
 
+    image_width = frames[frame_idx].cols;
+    image_height = frames[frame_idx].rows;
+    
     // テクスチャ
     glGenTextures(1, &image);
     glBindTexture(GL_TEXTURE_2D, image);
@@ -204,7 +209,15 @@ void SimpleGL::setTexture() {
 
 
 Eigen::Vector2d SimpleGL::imageCoord2GLCoord(Eigen::Vector2d img_pt) {
-    
+    /*
+     */
+    float aspect_ratio = 1.0f * image_height / image_width * width / height;
+    Eigen::Vector2d gl_pt;
+
+    gl_pt.x() = (img_pt.x() * scale / image_width + 1.0f + offset_x - scale * 0.5) / (2 * width_inv);
+    gl_pt.y() = (img_pt.y() * scale * width / (image_width * height)
+                 + 1.0f - offset_y - scale * 0.5 * aspect_ratio) / (2 * height_inv);
+    return gl_pt;
 }
 
 Eigen::Vector2d SimpleGL::glCoord2ImageCoord(Eigen::Vector2d gl_pt) {
@@ -212,13 +225,19 @@ Eigen::Vector2d SimpleGL::glCoord2ImageCoord(Eigen::Vector2d gl_pt) {
      * window の coordinate (左上(0, 0)、右下(window_width, window_height)) から
      * Image coordinate (画像左上(0, 0), 画像右下(image_width, image_height))
      */
-    int image_width = frames[frame_idx].cols, image_height = frames[frame_idx].rows;
+    double aspect_ratio = 1.0 * image_height  * width / (image_width * height);
     Eigen::Vector2d img_pt;
-    float aspect_ratio = 1.0f * image_height / image_width * width / height;
     
-    img_pt.x() = (2 * gl_pt.x() * width_inv - 1.0f - offset_x + scale * 0.5) * image_width / scale;
-    img_pt.y() = (2 * gl_pt.y() * height_inv - 1.0f + offset_y + scale * 0.5 * aspect_ratio) * height / width * image_width / scale;
+    img_pt.x() = (2.0 * gl_pt.x() * width_inv - 1.0 - offset_x + scale * 0.5) * image_width / scale;
+    img_pt.y() = (2.0 * gl_pt.y() * height_inv - 1.0 + offset_y + scale * 0.5 * aspect_ratio)
+        * height / width * image_width / scale;
+
     return img_pt;
+}
+
+bool SimpleGL::isPointInImage(double x, double y) {
+    auto ipt = glCoord2ImageCoord(Eigen::Vector2d(x, y));
+    return 0 < ipt.x() && ipt.x() < image_width && 0 < ipt.y() && ipt.y() < image_height;
 }
 
 } // namespace gl

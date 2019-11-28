@@ -17,7 +17,6 @@ class SimpleGL : public BaseGL {
     /*
      * 画像を一枚表示する class
      */
-    // TODO : refactor function name. From snake_case to camelCase
   public:
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
@@ -45,18 +44,20 @@ class SimpleGL : public BaseGL {
 
     void setTexture();
 
-    Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
-    Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
+    static Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
+    static Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
+    static bool isPointInImage(double x, double y);
     
     static void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
     static void mouseCallback(GLFWwindow *window, int button, int action, int mods);
     static void cursorCallback(GLFWwindow * window, double xpos, double ypos);
     
   private:
-    static float scale, offset_x, offset_y;  // 頂点の位置に関する変数
-    static constexpr float mouse_scroll_scale = 0.05;
+    static int image_width, image_height;
+    static float scale, offset_x, offset_y;  // 画像の scale, offset
+    static constexpr float mouse_scroll_scale = 0.10;
     static double prev_xpos, prev_ypos, xpos, ypos;
-    static bool is_left_button_pressed;
+    static bool is_left_button_pressed, is_pressed_in_image;
     
     GLuint image;
     GLuint vao, vbo;
