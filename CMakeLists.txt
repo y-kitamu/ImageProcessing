@@ -11,24 +11,24 @@ set(CMAKE_CXX_FLAGS "-Wall -fPIC -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+include(cmake/halide.cmake)
 include(cmake/utility.cmake)
 
 set(LIBRARIES "" CACHE INTERNAL "")
 set(EXTERNAL_LIBS "" CACHE INTERNAL "")
+set(HALIDE_OBJECTS "" CACHE INTERNAL "")
 
 ### External Libraries
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CMAKE_DL_LIBS} CACHE INTERNAL "")
 
-# opencv, glew, glfw
+# opencv, glfw
 find_package(OpenCV REQUIRED)
 set(OpenGL_GL_PREFERENCE GLVND) # legacy と glvnd の2種類の opengl が見つかったとき glvnd を選択する
 find_package(OpenGL REQUIRED)
-# find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 set(EXTERNAL_LIBS
   ${EXTERNAL_LIBS}
   ${OPENGL_LIBRARY}
-  # ${GLEW_LIBRARIES}
   glfw
   ${OpenCV_LIBS}
   CACHE INTERNAL "")
@@ -67,7 +67,8 @@ add_subdirectory(src/TGV)
 ### Add Executable
 add_subdirectory(snipets)
 
-### Print Variables
+
+### Print Variables (Debug)
 # include path
 # get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
 # foreach(SINGLE_PATH ${INCLUDE_PATH})

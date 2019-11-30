@@ -17,8 +17,8 @@ MACRO(ADD_SUBDIRS)
   ENDFOREACH()
 ENDMACRO()
 
-
 MACRO(ADD_TEST)
+  CREATE_HALIDE()
   FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/test_*.cpp")
   FOREACH(fname IN LISTS file_list)
     get_filename_component(basename ${fname} NAME_WE)
@@ -27,8 +27,8 @@ MACRO(ADD_TEST)
   ENDFOREACH()
 ENDMACRO()
 
-
 MACRO(ADD_LIB)
+  CREATE_HALIDE()
   FILE(GLOB file_list "${CMAKE_CURRENT_SOURCE_DIR}/[a-z]*.cpp")
   if (file_list)
     add_library(${module_name} ${file_list})
@@ -36,4 +36,3 @@ MACRO(ADD_LIB)
     # message("${module_name} : ${file_list}")
   endif()
 ENDMACRO()
-
