@@ -13,15 +13,15 @@ MACRO(CREATE_HALIDE_IMPL)
   
   IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/halide)
     set(header_gen_path ${CMAKE_CURRENT_SOURCE_DIR}/halide)
-    set(binary_gen_path ${CMAKE_CURRENT_BINARY_DIR}/halide)
+    set(binary_gen_path ${CMAKE_CURRENT_BINARY_DIR})
     
-    FILE(GLOB file_list ${CMAKE_CURRENT_SOURCE_DIR}/halide/[a-z]*.cpp)
-    FOREACH(fname IN LISTS file_list)
+    FILE(GLOB flist ${CMAKE_CURRENT_SOURCE_DIR}/halide/[a-z]*.cpp)
+    FOREACH(fname IN LISTS flist)
       set(target host)
-      if (DEFINED RUNTIME_GENERATED)
-        message("no runtime")
+      IF (DEFINED HALIDE_RUNTIME_GENERATED)
         set(target ${target}-no_runtime)
-      endif()
+      ENDIF()
+      message("target : ${target}")
       
       get_filename_component(bname ${fname} NAME_WE)
       set(tmp_generator ${bname}_tmp)
@@ -30,7 +30,7 @@ MACRO(CREATE_HALIDE_IMPL)
       
       add_custom_command(
         OUTPUT ${tmp_generator}
-        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -fno-rtti -o b${tmp_generator}
+        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -lz -lpthread -fno-rtti -o ${tmp_generator}
         DEPENDS ${fname}
         )
 
@@ -44,10 +44,12 @@ MACRO(CREATE_HALIDE_IMPL)
         EXTERNAL_OBJECT TRUE
         GENERATED TRUE)
       
-      set(halide_generated_binaries ${halide_generated_binaries} ${output_binary})
+      set(halide_generated_binaries ${halide_generated_binaries} ${binary_gen_path}/${output_binary})
+      set(HALIDE_RUNTIME_GENERATED "")
     ENDFOREACH()
     IF (DEFINED halide_generated_binaries)
       add_custom_target(${module_name}_halide ALL SOURCES ${halide_generated_binaries})
+      # message(${halide_generated_binaries})
     ENDIF()
   ENDIF()
 ENDMACRO()
