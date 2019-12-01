@@ -1,33 +1,53 @@
-MACRO(CREATE_HALIDE)
+MACRO(CREATE_HALIDE_LIB)
+  CREATE_HALIDE_IMPL()
+  IF (DEFINED halide_generated_binaries)
+    add_dependencies(${module_name} ${module_name}_halide)
+    set(HALIDE_OBJECTS ${HALIDE_OBJECTS} ${halide_generated_binaries} CACHE INTERNAL "")
+  ENDIF()
+ENDMACRO()
+
+MACRO(CREATE_HALIDE_IMPL)
+  IF (DEFINED halide_generated_binaries)
+    unset(halide_generated_binaries)
+  ENDIF()
+  
   IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/halide)
     set(header_gen_path ${CMAKE_CURRENT_SOURCE_DIR}/halide)
-    set(binary_gen_path ${CMAKE_CURRENT_BINARY_DIR}/halide) 
+    set(binary_gen_path ${CMAKE_CURRENT_BINARY_DIR}/halide)
     
     FILE(GLOB file_list ${CMAKE_CURRENT_SOURCE_DIR}/halide/[a-z]*.cpp)
     FOREACH(fname IN LISTS file_list)
-      get_filename_component(basename ${fname} NAME_WE)
-      set(tmp_generator ${fname}_tmp)
-      set(output_header ${fname}.h)
-      set(output_binary ${fname}.a)
+      set(target host)
+      if (DEFINED RUNTIME_GENERATED)
+        message("no runtime")
+        set(target ${target}-no_runtime)
+      endif()
+      
+      get_filename_component(bname ${fname} NAME_WE)
+      set(tmp_generator ${bname}_tmp)
+      set(output_header ${bname}.h)
+      set(output_binary ${bname}.a)
       
       add_custom_command(
         OUTPUT ${tmp_generator}
-        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -fno-rtti ${tmp_generator}
+        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -fno-rtti -o b${tmp_generator}
         DEPENDS ${fname}
         )
 
       add_custom_command(
         OUTPUT ${ouput_header} ${output_binary}
-        COMMAND ./${tmp_generator} -g ${basename} -o ${header_gen_path} target=host -e h
-        COMMAND ./${tmp_generator} -g ${basename} -o ${binary_gen_path} target=host -e static_library
-        DEPENDS ${tmp_generator_path}
+        COMMAND ./${tmp_generator} -g ${bname} -o ${header_gen_path} target=${target} -e h
+        COMMAND ./${tmp_generator} -g ${bname} -o ${binary_gen_path} target=${target} -e static_library
+        DEPENDS ${tmp_generator}
         )
       set_source_files_properties(${output_binary} PROPERTIES
         EXTERNAL_OBJECT TRUE
         GENERATED TRUE)
-      set(generated_binaries ${generated_binaries} ${binary_gen_path}/${output_binary})
+      
+      set(halide_generated_binaries ${halide_generated_binaries} ${output_binary})
     ENDFOREACH()
-    add_custom_target(${module_name}_halide ALL SOURCES ${halide_objects})
-    set(HALIDE_OBJECTS ${HALIDE_OBJECTS} ${generated_binaries} CACHE INTERNAL "")
+    IF (DEFINED halide_generated_binaries)
+      add_custom_target(${module_name}_halide ALL SOURCES ${halide_generated_binaries})
+    ENDIF()
   ENDIF()
-MACRO()
+ENDMACRO()
