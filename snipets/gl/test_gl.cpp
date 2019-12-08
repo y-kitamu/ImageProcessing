@@ -9,24 +9,16 @@
 #include <gperftools/profiler.h>
 
 #include "gl/simple.hpp"
+#include "debug_util/utility.hpp"
 
 namespace fs = boost::filesystem;
 
 int main(int argc, char ** argv) {
     // 環境によってはうまく動作しない？
     // 正方形の画像はうまく表示されたけど、長方形だと変になる
-    // 画像サイズが大きいときに遅くなる
     // gpu driver によって違う？
-    google::InitGoogleLogging(argv[0]);
-    google::InstallFailureSignalHandler();
 
-    fs::path prof_dir("./prof/");
-    if (!fs::exists(prof_dir)) {
-        fs::create_directory(prof_dir);
-    }
-    
-    ProfilerStart(
-        (prof_dir / fs::path(fs::basename(fs::path(__FILE__)) + ".prof")).generic_string().c_str());
+    util::startGoogleLogging(argc, argv, __FILE__);
     
     std::string filename =
         (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
@@ -52,5 +44,5 @@ int main(int argc, char ** argv) {
     window.addFrame(img);
     window.draw();
 
-    ProfilerStop();
+    util::stopGoogleLogging();
 }
