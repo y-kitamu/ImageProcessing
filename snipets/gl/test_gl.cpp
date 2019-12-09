@@ -36,11 +36,14 @@ int main(int argc, char ** argv) {
     fmt::print("filename : {}, shader_dir : {}\n", filename, shader_dir);
     fmt::print("image (width x height) : {} x {}\n", img.cols, img.rows);
     
-    gl::SimpleGL window = gl::SimpleGL();
+    // gl::SimpleGL window = gl::SimpleGL();
+    gl::SimpleGL window = gl::SimpleGL::getInstance();
 
     window.addFrame(img);
     window.addFrame(img);
     window.draw();
+
+    window.destroy();
 
     util::stopLogging();
 }

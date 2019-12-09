@@ -3,6 +3,8 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <mutex>
 
 #include <sstream>
 #include <thread>
@@ -29,7 +31,7 @@ class BaseGL {
      * TODO : 
      *   - 呼び出しプログラム側から opengl object を追加できるようにする。 (点、多角形？、画像、線)
      */
-  public:
+  protected:
     BaseGL() {
         initGL();
         initImgui();
@@ -37,6 +39,7 @@ class BaseGL {
         glfwSetWindowSizeCallback(img_window, windowSizeCallback); // callback を基底クラスと派生クラスにバラバラにおいていい？
     }
 
+  public:
     ~BaseGL() {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -80,6 +83,31 @@ class BaseGL {
     
   protected:
     ImGuiStyleColor imgui_theme;
+};
+
+
+template<class T>
+class SingletonBaseGL : public BaseGL {
+  public:
+    
+    template<class... Args>
+    static T& getInstance(Args... args) {
+        auto func = [&args...]() { create(args...); };
+        std::call_once(init_flag, func);
+        return *singleton;
+    }
+
+    template<class... Args>
+    static void create(Args... args) {
+        singleton = std::unique_ptr<T>(new T(args...));
+    }
+    
+    static void destroy() {
+        singleton.release();
+    }
+
+    static inline std::once_flag init_flag;
+    static inline std::unique_ptr<T> singleton;
 };
 
 } // namespace gl

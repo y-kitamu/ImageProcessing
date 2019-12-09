@@ -13,13 +13,15 @@
 namespace fs = boost::filesystem;
 
 namespace gl {
-class SimpleGL : public BaseGL {
+class SimpleGL : public SingletonBaseGL<SimpleGL> {
     /*
      * 画像を一枚表示する class
      *
      * TODO : Interface を整理する。わかりやすくする (他の oss などを参考にして関数名など refactor する)
      */
-  public:
+    friend class SingletonBaseGL<SimpleGL>; // getInstance が private の SimpleGL にアクセスするため
+    
+  private:
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
         glfwSetScrollCallback(img_window, scrollCallback);
@@ -29,6 +31,7 @@ class SimpleGL : public BaseGL {
                    (fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.frag")).generic_string());
     }
     
+  public:
     void addFrame(const cv::Mat &mat) {
         frames.emplace_back(mat);
     }

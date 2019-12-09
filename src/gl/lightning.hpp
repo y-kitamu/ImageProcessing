@@ -6,7 +6,7 @@
 
 namespace gl {
 
-class LightningGL : public BaseGL {
+class LightningGL : public SingletonBaseGL<LightningGL> {
     /*
      * 光の量、位置を変化させる class
      */
