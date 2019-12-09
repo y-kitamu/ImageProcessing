@@ -149,6 +149,9 @@ void SimpleGL::checkKeyboardAndMouseInput() {
 
 void SimpleGL::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
     scale += mouse_scroll_scale * yoffset;
+    if (scale < 0.3) {
+        scale = 0.3;
+    }
 }
 
 void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mods) {
