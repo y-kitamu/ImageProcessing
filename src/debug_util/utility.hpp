@@ -14,19 +14,21 @@
 
 #include <boost/filesystem.hpp>
 #include <glog/logging.h>
+#include <gperftools/profiler.h>
 
 
 namespace fs = boost::filesystem;
 
 namespace util {
 
-inline void startGoogleLogging(int argc, char ** argv, std::string filename,
-                          std::string save_dirname="./prof") {
+inline void startLogging(int argc, char ** argv, std::string filename,
+                         std::string save_dirname="./prof") {
     /*
-     * google perftool で segmentation fault などが発生したときに stack trace を出力するための設定
+     * google perftool で関数の速度などを測定するための設定と、
+     * google logging で segmentation fault などが発生したときに stack trace を出力するための設定
      * Args :
      *    argc, argv : テストプログラムの argc, argv
-     *    filename : テストプログラムのファイル名
+     *    filename : テストプログラムのファイル名 (perftool の profile 保存のファイル名になる)
      *    save_dir : プロファイルを保存するディレクトリ
      */
     google::InitGoogleLogging(argv[0]);
@@ -42,7 +44,7 @@ inline void startGoogleLogging(int argc, char ** argv, std::string filename,
         (save_dir / fs::path(fs::basename(fs::path(filename)) + ".prof")).generic_string().c_str());
 }
 
-inline void stopGoogleLogging() {
+inline void stopLogging() {
     ProfilerStop();
 }
 

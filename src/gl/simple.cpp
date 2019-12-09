@@ -178,15 +178,24 @@ void SimpleGL::setTexture() {
     // gray scale の画像と color 画像を切り替え
     if (frames[frame_idx].type() == CV_8UC1) {
         texture_format = GL_RED;
+        texture_internal_format = GL_RGB;
         swizzle_mask[0] = GL_RED;
         swizzle_mask[1] = GL_RED;
         swizzle_mask[2] = GL_RED;
         swizzle_mask[3] = GL_ZERO;
     } else if (frames[frame_idx].type() == CV_8UC3) {
         texture_format = GL_BGR;
+        texture_internal_format = GL_RGB;
         swizzle_mask[0] = GL_RED;
         swizzle_mask[1] = GL_GREEN;
         swizzle_mask[2] = GL_BLUE;
+        swizzle_mask[3] = GL_ZERO;
+    } else if (frames[frame_idx].type() == CV_32FC1) {
+        texture_format = GL_RED;
+        texture_internal_format = GL_R32F;
+        swizzle_mask[0] = GL_RED;
+        swizzle_mask[1] = GL_RED;
+        swizzle_mask[2] = GL_RED;
         swizzle_mask[3] = GL_ZERO;
     }
 
@@ -202,8 +211,8 @@ void SimpleGL::setTexture() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frames[frame_idx].cols, frames[frame_idx].rows, 0,
-                 texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
+    glTexImage2D(GL_TEXTURE_2D, 0, texture_internal_format, frames[frame_idx].cols,
+                 frames[frame_idx].rows, 0, texture_format, GL_UNSIGNED_BYTE, frames[frame_idx].ptr());
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 

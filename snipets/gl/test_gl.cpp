@@ -5,8 +5,6 @@
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
-#include <glog/logging.h>
-#include <gperftools/profiler.h>
 
 #include "gl/simple.hpp"
 #include "debug_util/utility.hpp"
@@ -18,7 +16,7 @@ int main(int argc, char ** argv) {
     // 正方形の画像はうまく表示されたけど、長方形だと変になる
     // gpu driver によって違う？
 
-    util::startGoogleLogging(argc, argv, __FILE__);
+    util::startLogging(argc, argv, __FILE__);
     
     std::string filename =
         (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
@@ -44,5 +42,5 @@ int main(int argc, char ** argv) {
     window.addFrame(img);
     window.draw();
 
-    util::stopGoogleLogging();
+    util::stopLogging();
 }

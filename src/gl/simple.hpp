@@ -16,6 +16,8 @@ namespace gl {
 class SimpleGL : public BaseGL {
     /*
      * 画像を一枚表示する class
+     *
+     * TODO : Interface を整理する。わかりやすくする (他の oss などを参考にして関数名など refactor する)
      */
   public:
     SimpleGL() {
@@ -65,7 +67,7 @@ class SimpleGL : public BaseGL {
     std::vector<cv::Mat> frames;
     int frame_idx = 0;  // 表示する画像の index
     int vertices;  // 頂点の数
-    GLenum texture_format = GL_BGR;
+    GLenum texture_format = GL_BGR, texture_internal_format = GL_RGB;
     GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ZERO};
     Eigen::Vector2d cursor_img_pt;
 };

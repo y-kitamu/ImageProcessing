@@ -21,7 +21,7 @@ MACRO(CREATE_HALIDE_IMPL)
       IF (DEFINED HALIDE_RUNTIME_GENERATED)
         set(target ${target}-no_runtime)
       ENDIF()
-      message("target : ${target}")
+      # message("target : ${target}")
       
       get_filename_component(bname ${fname} NAME_WE)
       set(tmp_generator ${bname}_tmp)
@@ -30,7 +30,7 @@ MACRO(CREATE_HALIDE_IMPL)
       
       add_custom_command(
         OUTPUT ${tmp_generator}
-        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -lz -lpthread -fno-rtti -o ${tmp_generator}
+        COMMAND ${CMAKE_CXX_COMPILER} ${fname} --std=c++1z -lHalide -ldl -fno-rtti -o ${tmp_generator}
         DEPENDS ${fname}
         )
 

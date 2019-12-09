@@ -1,2 +1,3 @@
 /snipets/uvc_video/
 /data/
+snipets/*/halide/*.h
