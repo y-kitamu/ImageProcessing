@@ -75,6 +75,8 @@ void SimpleGL::drawImgui() {
     ImGui::NewFrame();
 
     {
+        // menu bar (一番上のバー)
+        // ファイルのセーブ(未実装)・ロードなど
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 if (ImGui::MenuItem("Save")) {
@@ -152,7 +154,6 @@ void SimpleGL::scrollCallback(GLFWwindow * window, double xoffset, double yoffse
 }
 
 void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mods) {
-        
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         is_left_button_pressed = true;
         is_pressed_in_image = isPointInImage(xpos, ypos);
@@ -166,10 +167,9 @@ void SimpleGL::mouseCallback(GLFWwindow * window, int button, int action, int mo
 
 void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
     xpos = x; ypos = y;
-    if (is_left_button_pressed && is_pressed_in_image) {
+    if (is_left_button_pressed && is_pressed_in_image && !ImGui::IsAnyItemActive()) {
         offset_x += 2 * (xpos - prev_xpos) * width_inv;
         offset_y -= 2 * (ypos - prev_ypos) * height_inv;
-        
         prev_xpos = xpos; prev_ypos = ypos;
     }
 }
