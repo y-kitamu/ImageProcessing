@@ -24,7 +24,7 @@ int main(int argc, char ** argv) {
             u_ptr[0] = x * y * 255 / (img_size * img_size);
         }
     }
-        
+    
     auto& window = gl::SimpleGL::getInstance();
     window.addFrame(mat);
     window.addFrame(mat_uint);

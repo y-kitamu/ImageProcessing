@@ -33,16 +33,6 @@ std::pair<cv::Mat, cv::Mat> sobelFilter(cv::Mat &src) {
     memcpy(sobel_x.ptr(), output_x.data(), src.cols * src.rows * sizeof(float));
     memcpy(sobel_y.ptr(), output_y.data(), src.cols * src.rows * sizeof(float));
 
-    {
-        uint8_t *s_ptr = src.ptr<uint8_t>();
-        float *g_ptr = gray.ptr<float>();
-        for (int y = 0; y < src.rows; y++) {
-            for (int x = 0; x < src.cols; x++, s_ptr += 3, g_ptr++) {
-                fmt::print("src = {}, gray = {}\n", s_ptr[0], g_ptr[0] * 255);
-            }
-        }
-    }
-    
     window.addFrame(gray);
     
     return std::make_pair(sobel_x, sobel_y);

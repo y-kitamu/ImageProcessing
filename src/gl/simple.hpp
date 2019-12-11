@@ -20,7 +20,6 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
      * TODO : Interface を整理する。わかりやすくする (他の oss などを参考にして関数名など refactor する)
      */
     friend class SingletonBaseGL<SimpleGL>; // getInstance が private の SimpleGL にアクセスするため
-    
   private:
     SimpleGL() {
         // BaseGL (基底クラス)のコンストラクタのあとに呼び出し
@@ -70,8 +69,6 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
     std::vector<cv::Mat> frames;
     int frame_idx = 0;  // 表示する画像の index
     int vertices;  // 頂点の数
-    GLenum texture_format = GL_BGR, texture_internal_format = GL_RGB;
-    GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ZERO};
     Eigen::Vector2d cursor_img_pt;
 };
 
