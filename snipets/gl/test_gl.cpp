@@ -1,10 +1,12 @@
 #include <unistd.h>
+#include <random>
 #include <iostream>
 #include <fstream>
 #include <cmdline/cmdline.h>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
+#include <Eigen/Eigen>
 
 #include "gl/simple.hpp"
 #include "debug_util/utility.hpp"
@@ -39,8 +41,17 @@ int main(int argc, char ** argv) {
     // gl::SimpleGL window = gl::SimpleGL();
     gl::SimpleGL window = gl::SimpleGL::getInstance();
 
-    window.addFrame(img);
-    window.addFrame(img);
+    auto debug_image0 = window.addFrame(img);
+    auto debug_image1 = window.addFrame(img);
+
+    std::random_device seed;
+    std::mt19937 engine(seed());
+    std::uniform_real_distribution<> dist(0.0, 512.0);
+    for (int i = 0; i < 512; i++) {
+        double x = dist(engine), y = dist(engine);
+        debug_image0->points.addPoint(Eigen::Vector2d(x, y));
+    }
+    
     window.draw();
 
     window.destroy();

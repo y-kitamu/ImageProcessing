@@ -61,14 +61,6 @@ void Image::setTexture() {
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Image::updateParams(int iwidth, int iheight, float iscale, float offx, float offy) {
-    image_width = iwidth;
-    image_height = iheight;
-    scale = iscale;
-    offset_x = offx;
-    offset_y = offy;
-}
-
 void Image::load(int window_width, int window_height) {
     /*
      * フレームごとに変化する可能性のある gl object をロードする関数
@@ -103,9 +95,12 @@ void Image::load(int window_width, int window_height) {
     index = 1;
     glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (GLvoid *)(size * sizeof(GLfloat)));
     glEnableVertexAttribArray(index);
+
+    points.load();
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
     glBindVertexArray(0);  // vao の bind を解除
+
 }
 
 void Image::draw() {
@@ -121,9 +116,10 @@ void Image::draw() {
     // 図形の描画
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
     
+    points.draw();
+    
     // bind を解除
     glBindVertexArray(0);
-    
     glUseProgram(0);
 }
 

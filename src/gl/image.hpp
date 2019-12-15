@@ -22,23 +22,37 @@ namespace fs = boost::filesystem;
 namespace gl {
 
 class Image {
+    /*
+     * debug 画面上に表示する画像に関するクラス
+     */
   public:
     Image(const cv::Mat &img,
           std::string shader_basename = "simple_texture",
           fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader"));
     void setTexture();
-    void updateParams(int image_width, int image_height, float scale, float offset_x, float offset_y);
+    void updateParams();
     void load(int window_width, int window_height);
     void draw();
 
-    Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
-    Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
+    template<class T>
+    void updateParams() {
+        image_width = T::getImageWidth();
+        image_height = T::getImageHeight();
+        scale = T::getScale();
+        offset_x = T::getOffsetX();
+        offset_y = T::getOffsetY();
+        
+        points.updateGLPts<T>();
+    }
 
     int getImageWidth() { return image_width; }
     int getImageHeight() { return image_height; }
     float getScale() { return scale; }
     float getOffsetX() { return offset_x; }
     float getOffsetY() { return offset_y; }
+
+  public:
+    Points points;
     
   private:
     cv::Mat image;
@@ -46,7 +60,7 @@ class Image {
     GLuint vao, vbo;
     GLuint program_id; // shader program id 
     int vertices;  // 頂点の数
-    
+
     GLint swizzle_mask[4];
     GLenum texture_format;  // pixel 上の画像の形式を指定
     GLenum texture_internal_format; //テクスチャを opengl 内部でどう保持するかを指定

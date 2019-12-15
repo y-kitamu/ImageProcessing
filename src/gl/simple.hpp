@@ -1,5 +1,5 @@
-#ifndef __GL_SIMPLE_HPP__
-#define __GL_SIMPLE_HPP__
+#ifndef GL_SIMPLE_HPP__
+#define GL_SIMPLE_HPP__
 
 #include <stdio.h>
 
@@ -30,9 +30,21 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
     }
     
   public:
-    void addFrame(const cv::Mat &mat) {
-        frames.emplace_back(std::make_shared<Image>(mat));
+    std::shared_ptr<Image> addFrame(const cv::Mat &mat) {
+        auto frame = std::make_shared<Image>(mat);
+        frames.emplace_back(frame);
+        return frame;
     }
+    
+    static int getImageWidth() { return image_width; }
+    static int getImageHeight() { return image_height; }
+    static float getScale() { return scale; }
+    static float getOffsetX() { return offset_x; }
+    static float getOffsetY() { return offset_y; }
+    
+    static Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
+    static Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
+    static bool isPointInImage(double x, double y);
 
   private:
     // draw() の最初に呼び出される
@@ -47,14 +59,10 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
 
     void setTexture();
 
-    static Eigen::Vector2d imageCoord2GLCoord(Eigen::Vector2d img_pt);
-    static Eigen::Vector2d glCoord2ImageCoord(Eigen::Vector2d gl_pt);
-    static bool isPointInImage(double x, double y);
-    
     static void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
     static void mouseCallback(GLFWwindow *window, int button, int action, int mods);
     static void cursorCallback(GLFWwindow * window, double xpos, double ypos);
-    
+
   private:
     static constexpr float mouse_scroll_scale = 0.10;
     inline static double prev_xpos = 0.0, prev_ypos = 0.0, xpos = 0.0, ypos = 0.0; // mouse position
@@ -73,4 +81,4 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
 } // namespace gl
 
 
-#endif //__GL_SIMPLE_HPP__
+#endif //GL_SIMPLE_HPP__

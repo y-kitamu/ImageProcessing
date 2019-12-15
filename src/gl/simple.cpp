@@ -5,7 +5,7 @@
 namespace gl {
 
 void SimpleGL::loadGLObjects() {
-    frames[frame_idx]->updateParams(image_width, image_height, scale, offset_x, offset_y);
+    frames[frame_idx]->updateParams<SimpleGL>();
     frames[frame_idx]->load(width, height);
 }
 
@@ -130,12 +130,12 @@ void SimpleGL::setTexture() {
 
 
 Eigen::Vector2d SimpleGL::imageCoord2GLCoord(Eigen::Vector2d img_pt) {
-    float aspect_ratio = 1.0f * image_height / image_width * width / height;
+    float aspect_ratio = (float)image_height / image_width * width / height;
     Eigen::Vector2d gl_pt;
 
     gl_pt.x() = (img_pt.x() * scale / image_width + 1.0f + offset_x - scale * 0.5) / (2 * width_inv);
     gl_pt.y() = (img_pt.y() * scale * width / (image_width * height)
-                 + 1.0f - offset_y - scale * 0.5 * aspect_ratio) / (2 * height_inv);
+                 + 1.0f + offset_y - scale * 0.5 * aspect_ratio) / (2 * height_inv);
     return gl_pt;
 }
 
