@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 
-#include "base.hpp"
 #include <Eigen/Eigen>
 #include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
 
+#include "base.hpp"
+#include "image.hpp"
 #include "line.hpp"
 
 namespace fs = boost::filesystem;
@@ -26,13 +27,11 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
         glfwSetScrollCallback(img_window, scrollCallback);
         glfwSetMouseButtonCallback(img_window, mouseCallback);
         glfwSetCursorPosCallback(img_window, cursorCallback);
-        setShader((fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.vert")).generic_string(),
-                   (fs::path(__FILE__).parent_path() / fs::path("./shader/simple_texture.frag")).generic_string());
     }
     
   public:
     void addFrame(const cv::Mat &mat) {
-        frames.emplace_back(mat);
+        frames.emplace_back(std::make_shared<Image>(mat));
     }
 
   private:
@@ -57,18 +56,17 @@ class SimpleGL : public SingletonBaseGL<SimpleGL> {
     static void cursorCallback(GLFWwindow * window, double xpos, double ypos);
     
   private:
-    static int image_width, image_height;
-    static float scale, offset_x, offset_y;  // 画像の scale, offset
     static constexpr float mouse_scroll_scale = 0.10;
-    static double prev_xpos, prev_ypos, xpos, ypos;
-    static bool is_left_button_pressed, is_pressed_in_image;
+    inline static double prev_xpos = 0.0, prev_ypos = 0.0, xpos = 0.0, ypos = 0.0; // mouse position
+    inline static bool is_left_button_pressed = false, is_pressed_in_image = false;
+
+    // variable about selected image
+    inline static int image_width = 0, image_height = 0;
+    inline static float scale = 1.0f;
+    inline static float offset_x = 0.0f, offset_y = 0.0f;
     
-    GLuint image;
-    GLuint vao, vbo;
-    
-    std::vector<cv::Mat> frames;
+    std::vector<std::shared_ptr<Image>> frames;
     int frame_idx = 0;  // 表示する画像の index
-    int vertices;  // 頂点の数
     Eigen::Vector2d cursor_img_pt;
 };
 

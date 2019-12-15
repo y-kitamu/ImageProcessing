@@ -2,13 +2,15 @@
  * utility.hpp
  *
  * デバッグ用のテンプレ関数の定義など
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! snipets 以外から include しない  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * header で src で include すると multiple definition のエラーになる
  * 
  * Create Date : 2019-12-08 20:22:59
  * Copyright (c) 2019 Yusuke Kitamura <ymyk6602@gmail.com>
  */
 
-#ifndef UTILITY_HPP__
-#define UTILITY_HPP__
+#ifndef DEBUG_UTILITY_HPP__
+#define DEBUG_UTILITY_HPP__
 
 #include <string>
 
@@ -50,4 +52,4 @@ inline void stopLogging() {
 
 }
 
-#endif // UTILITY_HPP__
+#endif // DEBUG_UTILITY_HPP__

@@ -10,17 +10,7 @@
 #include <thread>
 #include <chrono>
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-// #include <GL/glew.h> // glew だとエラーになった
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-
-#include "shader.hpp"
-#include "imgui_style_color.hpp"
-
+#include "base_include.hpp"
 
 namespace gl {
 
@@ -50,10 +40,6 @@ class BaseGL {
         return;
     }
     
-    void setShader(std::string vertex_shader_fname, std::string fragment_shader_fname) {
-        program_id = LoadShaders(vertex_shader_fname.c_str(), fragment_shader_fname.c_str());
-    }
-    
     virtual void draw();
     virtual void initDraw() {};
 
@@ -74,10 +60,9 @@ class BaseGL {
                                        GLsizei length, const GLchar *message, void *userParam);
 
   public:
-    static int width, height;
-    static float width_inv, height_inv;
+    inline static int width = 1024, height = 768;
+    inline static float width_inv = 1.0f / width, height_inv = 1.0f / height;
     GLFWwindow *img_window;
-    GLuint program_id;
     // const char* glsl_version = "#version 460 core";
     const char* glsl_version="#version 330";
     

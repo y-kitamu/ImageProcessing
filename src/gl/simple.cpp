@@ -4,68 +4,13 @@
 
 namespace gl {
 
-// static 変数のためここで代入
-int SimpleGL::image_width = 0, SimpleGL::image_height = 0;
-float SimpleGL::scale = 1.0f;
-float SimpleGL::offset_x = 0.0, SimpleGL::offset_y = 0.0; // 画像の中心の window の中心に対する offset
-double SimpleGL::prev_xpos = 0.0, SimpleGL::prev_ypos = 0.0;
-double SimpleGL::xpos = 0.0, SimpleGL::ypos = 0.0;
-bool SimpleGL::is_left_button_pressed = false, SimpleGL::is_pressed_in_image = false;
-
-
 void SimpleGL::loadGLObjects() {
-    // 頂点データを準備
-    // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
-    // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
-    float rows = frames[frame_idx].rows, cols = frames[frame_idx].cols;
-    float aspect_ratio = rows / cols * width / height;
-    GLfloat position[4][4] = {
-        // [x, y, u, v]
-        {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, 1.0f},
-        { 0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 1.0f, 1.0f},
-        { 0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, 1.0f, 0.0f},
-        {-0.5f * scale + offset_x,  0.5f * aspect_ratio * scale + offset_y, 0.0f, 0.0f},
-    };
-    vertices = sizeof(position) / sizeof(position[0]);
-
-    // VAO (gpu 側のオブジェクト)を作成、有効にする
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // VBO (cpu 側のオブジェクト)に頂点情報を格納 
-    glGenBuffers(1, &vbo);  // バッファ作成
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);  // GL コンテキストに vbo をBL_ARRAY_BUFFER でバインド
-    glBufferData(GL_ARRAY_BUFFER, sizeof(position), position, GL_STATIC_DRAW);  // 実データを格納
-
-    // 位置属性を 「0」にバインド（シェーダー側で後で参照）
-    int index = 0, size = 2, stride = sizeof(position[0]);
-    glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, 0);  // shader の attrib 属性に渡すデータの指定
-    glEnableVertexAttribArray(index);
-    index = 1;
-    glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (GLvoid *)(size * sizeof(GLfloat)));
-    glEnableVertexAttribArray(index);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
-    glBindVertexArray(0);  // vao の bind を解除
+    frames[frame_idx]->updateParams(image_width, image_height, scale, offset_x, offset_y);
+    frames[frame_idx]->load(width, height);
 }
 
 void SimpleGL::drawGL() {
-    // シェーダプログラムの使用開始
-    glUseProgram(program_id);
-
-    // テクスチャユニットとテクスチャの指定
-    //glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, image);
-
-    // 描画に使う頂点配列オブジェクトの指定
-    glBindVertexArray(vao);
-
-    // 図形の描画
-    glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
-
-    // bind を解除
-    glBindVertexArray(0);
-    glUseProgram(0);
+    frames[frame_idx]->draw();
 }
 
 void SimpleGL::drawImgui() {
@@ -175,62 +120,16 @@ void SimpleGL::cursorCallback(GLFWwindow * window, double x, double y) {
 }
 
 void SimpleGL::setTexture() {
-    /*
-     * gray scale の画像と color 画像を切り替え
-     * - texture_format は pixel 上の画像の形式を指定
-     * - texture_internal_format はテクスチャを opengl 内部でどう保持するかを指定
-     * - swizzle_mask はrgba の swizzle mask を指定
-     * - texture_format は pixel のフォーマットを指定
-     */
-    GLenum texture_format = GL_RED, texture_internal_format = GL_RGB, pixel_format = GL_UNSIGNED_BYTE;
-    GLint swizzle_mask[4] = {GL_RED, GL_RED, GL_RED, GL_UNSIGNED_BYTE};
-    if (frames[frame_idx].type() == CV_8UC1) {
-        texture_format = GL_RED;
-        texture_internal_format = GL_RGB;
-        swizzle_mask[0] = GL_RED;
-        swizzle_mask[1] = GL_RED;
-        swizzle_mask[2] = GL_RED;
-        swizzle_mask[3] = GL_ZERO;
-        pixel_format = GL_UNSIGNED_BYTE;
-    } else if (frames[frame_idx].type() == CV_8UC3) {
-        texture_format = GL_BGR;
-        texture_internal_format = GL_RGB;
-        swizzle_mask[0] = GL_RED;
-        swizzle_mask[1] = GL_GREEN;
-        swizzle_mask[2] = GL_BLUE;
-        swizzle_mask[3] = GL_ZERO;
-        pixel_format = GL_UNSIGNED_BYTE;
-    } else if (frames[frame_idx].type() == CV_32FC1) {
-        texture_format = GL_RED;
-        texture_internal_format = GL_R32F;
-        swizzle_mask[0] = GL_RED;
-        swizzle_mask[1] = GL_RED;
-        swizzle_mask[2] = GL_RED;
-        swizzle_mask[3] = GL_ZERO;
-        pixel_format = GL_FLOAT;
-    }
-
-    image_width = frames[frame_idx].cols;
-    image_height = frames[frame_idx].rows;
-    
-    // テクスチャ
-    glGenTextures(1, &image);
-    glBindTexture(GL_TEXTURE_2D, image);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_TEXTURE_2D の場合 GL_LINEAR_MIPMAP_LINEAR だと真っ黒になった
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, texture_internal_format, frames[frame_idx].cols,
-                 frames[frame_idx].rows, 0, texture_format, pixel_format, frames[frame_idx].ptr());
-    glGenerateMipmap(GL_TEXTURE_2D);
+    frames[frame_idx]->setTexture();
+    image_width = frames[frame_idx]->getImageWidth();
+    image_height = frames[frame_idx]->getImageHeight();
+    scale = frames[frame_idx]->getScale();
+    offset_x = frames[frame_idx]->getOffsetX();
+    offset_y = frames[frame_idx]->getOffsetY();
 }
 
 
 Eigen::Vector2d SimpleGL::imageCoord2GLCoord(Eigen::Vector2d img_pt) {
-    /*
-     */
     float aspect_ratio = 1.0f * image_height / image_width * width / height;
     Eigen::Vector2d gl_pt;
 

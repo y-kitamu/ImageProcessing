@@ -11,6 +11,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include <nameof.hpp>
 #include <fmt/format.h>
 #include "imgui.h"

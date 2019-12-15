@@ -107,13 +107,13 @@ void LightningGL::loadGLObjects() {
 }
 
 void LightningGL::drawGL() {
-    glUseProgram(program_id);
+    // glUseProgram(program_id);
 
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // glBindVertexArray(vao);
+    // glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    glBindVertexArray(0);
-    glUseProgram(0);
+    // glBindVertexArray(0);
+    // glUseProgram(0);
 }
 
 void LightningGL::drawImgui() {

@@ -3,8 +3,8 @@
 
 namespace gl {
 
-int BaseGL::width = 1024, BaseGL::height = 768;
-float BaseGL::width_inv = 1.0f / BaseGL::width, BaseGL::height_inv = 1.0f / BaseGL::height;
+// int BaseGL::width = 1024, BaseGL::height = 768;
+// float BaseGL::width_inv = 1.0f / BaseGL::width, BaseGL::height_inv = 1.0f / BaseGL::height;
 
 void BaseGL::initGL() {
     // initialize glfw
