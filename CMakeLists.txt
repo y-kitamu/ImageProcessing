@@ -16,7 +16,7 @@ include(cmake/utility.cmake)
 
 set(LIBRARIES "" CACHE INTERNAL "")
 set(EXTERNAL_LIBS "" CACHE INTERNAL "")
-set(HALIDE_OBJECTS "" CACHE INTERNAL "")
+# set(HALIDE_OBJECTS "" CACHE INTERNAL "")
 if (DEFINED HALIDE_RUNTIME_GENERATED)
   unset(HALIDE_RUNTIME_GENERATED)
 endif()
@@ -73,10 +73,10 @@ add_subdirectory(snipets)
 
 ### Print Variables (Debug)
 # include path
-# get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
-# foreach(SINGLE_PATH ${INCLUDE_PATH})
-#   message("${SINGLE_PATH}")
-# endforeach()
+get_directory_property(INCLUDE_PATH INCLUDE_DIRECTORIES)
+foreach(SINGLE_PATH ${INCLUDE_PATH})
+  message("${SINGLE_PATH}")
+endforeach()
 
 # link libraries
 # message("Libraries : ${LIBRARIES}")

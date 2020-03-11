@@ -2,7 +2,7 @@ MACRO(CREATE_HALIDE_LIB)
   CREATE_HALIDE_IMPL()
   IF (DEFINED halide_generated_binaries)
     add_dependencies(${module_name} ${module_name}_halide)
-    set(HALIDE_OBJECTS ${HALIDE_OBJECTS} ${halide_generated_binaries} CACHE INTERNAL "")
+    # set(HALIDE_OBJECTS ${HALIDE_OBJECTS} ${halide_generated_binaries} CACHE INTERNAL "")
   ENDIF()
 ENDMACRO()
 

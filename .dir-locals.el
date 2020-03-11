@@ -1,17 +1,19 @@
 ;; Emacs C++ local (only under this directory) settings 
 
-
 ;;; CODE:
 ((c++-mode .
-      ((flycheck-clang-language-standard . "c++1z")
+      ((flycheck-clang-language-standard . "c++17")
        (flycheck-clang-include-path . (
-                                       "~/work/opencv/TGV/"
-                                       "/home/kitamura/work/opencv/ext/"
-                                       "/home/kitamura/work/opencv/ext/eigen"
-                                       "/usr/local/include/opencv4/"
-                                       "/home/kitamura/work/ImageProcessing/ext/"
-                                       "/home/kitamura/work/ImageProcessing/ext/eigen/"
-                                       "/home/kitamura/lib/ceres-solver/include/"
+                                       "/usr/local/include/opencv4"
+                                       "/home/kitamura/work/ImageProcessing/ext"
+                                       "/home/kitamura/work/ImageProcessing/ext/imgui"
+                                       "/home/kitamura/work/ImageProcessing/ext/fmt/include"
+                                       "/home/kitamura/work/ImageProcessing/ext/cereal/include"
+                                       "/home/kitamura/work/ImageProcessing/ext/nameof/include"
+                                       "/home/kitamura/work/ImageProcessing/ext/imgui/examples"
+                                       "/home/kitamura/work/ImageProcessing/ext/imgui/examples/libs/gl3w"
+                                       "/usr/include/eigen3"
+                                       "/home/kitamura/work/ImageProcessing/src"
                                        ))
       )))
 

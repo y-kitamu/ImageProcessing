@@ -1,3 +1,7 @@
 /snipets/uvc_video/
 /data/
+/build/
+GPATH
+GTAGS
+GRTAGS
 snipets/*/halide/*.h
