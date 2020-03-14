@@ -4,7 +4,7 @@
 #include <cereal/cereal.hpp>
 #include <fmt/format.h>
 
-#include "gl/simple.hpp"
+#include "gl/base.hpp"
 #include "cereal/opencv.hpp"
 
 int main(int argc, char ** argv) {
@@ -28,7 +28,7 @@ int main(int argc, char ** argv) {
     cv::threshold(img, thresh, 0, 0, cv::THRESH_OTSU);
 
     // gl::SimpleGL window = gl::SimpleGL();
-    gl::SimpleGL window = gl::SimpleGL::getInstance();
+    gl::BaseGL window = gl::BaseGL::getInstance();
     
     window.addFrame(raw);
     window.addFrame(img);

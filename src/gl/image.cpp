@@ -4,12 +4,14 @@
  * Create Date : 2019-12-15 10:30:27
  * Copyright (c) 2019 Yusuke Kitamura <ymyk6602@gmail.com>
  */
+#include "base.hpp"
 #include "image.hpp"
+#include "plugin_base.hpp"
 #include <fmt/format.h>
 
 namespace gl {
 
-Image::Image(const cv::Mat &img, std::string shader_basename, fs::path shader_dir) : image(img) {
+Image::Image(const cv::Mat &img) : image(img) {
     if (image.type() == CV_8UC1) {
         texture_format = GL_RED;
         texture_internal_format = GL_RGB;
@@ -38,10 +40,6 @@ Image::Image(const cv::Mat &img, std::string shader_basename, fs::path shader_di
 
     image_width = image.cols;
     image_height = image.rows;
-
-    program_id = setShader(
-        (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
-        (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
 }
 
 void Image::setTexture() {
@@ -61,7 +59,7 @@ void Image::setTexture() {
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Image::load(int window_width, int window_height) {
+void Image::load() {
     /*
      * フレームごとに変化する可能性のある gl object をロードする関数
      */
@@ -69,7 +67,7 @@ void Image::load(int window_width, int window_height) {
     // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
 
-    float aspect_ratio = (float)image_height / image_width * window_width / window_height;
+    float aspect_ratio = (float)image_height / image_width * BaseGL::width / BaseGL::height;
     GLfloat position[4][4] = {
         // [x, y, u, v]
         {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, 1.0f},
@@ -100,7 +98,6 @@ void Image::load(int window_width, int window_height) {
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);  // vbo の bind を解除
     glBindVertexArray(0);  // vao の bind を解除
-
 }
 
 void Image::draw() {
@@ -112,7 +109,7 @@ void Image::draw() {
     glBindVertexArray(vao);
 
     // シェーダプログラムの指定
-    glUseProgram(program_id);
+    glUseProgram(PluginBase::shader_program_id);
     // 図形の描画
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
     

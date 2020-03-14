@@ -26,23 +26,21 @@ class Image {
      * debug 画面上に表示する画像に関するクラス
      */
   public:
-    Image(const cv::Mat &img,
-          std::string shader_basename = "simple_texture",
-          fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader"));
+    Image(const cv::Mat &img);
     void setTexture();
-    void updateParams();
-    void load(int window_width, int window_height);
+    void load();
     void draw();
 
     template<class T>
     void updateParams() {
+        // reflect and retain changes made by callbacks 
         image_width = T::getImageWidth();
         image_height = T::getImageHeight();
         scale = T::getScale();
         offset_x = T::getOffsetX();
         offset_y = T::getOffsetY();
         
-        points.updateGLPts<T>();
+        points.updateGLPts();
     }
 
     int getImageWidth() { return image_width; }
@@ -58,7 +56,6 @@ class Image {
     cv::Mat image;
     GLuint texture_id;
     GLuint vao, vbo;
-    GLuint program_id; // shader program id 
     int vertices;  // 頂点の数
 
     GLint swizzle_mask[4];

@@ -6,7 +6,7 @@
  */
 #include <opencv2/opencv.hpp>
 
-#include "gl/simple.hpp"
+#include "gl/base.hpp"
 #include "debug_util/utility.hpp"
 
 int main(int argc, char ** argv) {
@@ -25,11 +25,11 @@ int main(int argc, char ** argv) {
         }
     }
     
-    auto& window = gl::SimpleGL::getInstance();
+    auto& window = gl::BaseGL::getInstance();
     window.addFrame(mat);
     window.addFrame(mat_uint);
     window.draw();
-    window.destroy();
+    gl::BaseGL::destroy();
     
     util::stopLogging();
 }

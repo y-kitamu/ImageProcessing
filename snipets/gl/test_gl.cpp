@@ -8,7 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <Eigen/Eigen>
 
-#include "gl/simple.hpp"
+#include "gl/base.hpp"
 #include "debug_util/utility.hpp"
 
 namespace fs = boost::filesystem;
@@ -39,7 +39,7 @@ int main(int argc, char ** argv) {
     fmt::print("image (width x height) : {} x {}\n", img.cols, img.rows);
     
     // gl::SimpleGL window = gl::SimpleGL();
-    gl::SimpleGL window = gl::SimpleGL::getInstance();
+    gl::BaseGL window = gl::BaseGL::getInstance();
 
     auto debug_image0 = window.addFrame(img);
     auto debug_image1 = window.addFrame(img);
@@ -53,8 +53,7 @@ int main(int argc, char ** argv) {
     }
     
     window.draw();
-
-    window.destroy();
+    gl::BaseGL::destroy();
 
     util::stopLogging();
 }

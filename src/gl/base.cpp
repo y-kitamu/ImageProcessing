@@ -3,8 +3,24 @@
 
 namespace gl {
 
-// int BaseGL::width = 1024, BaseGL::height = 768;
-// float BaseGL::width_inv = 1.0f / BaseGL::width, BaseGL::height_inv = 1.0f / BaseGL::height;
+BaseGL::BaseGL() {
+    initGL();
+    initImgui();
+
+    glfwSetWindowSizeCallback(img_window, windowSizeCallback);
+    // callback を基底クラスと派生クラスにバラバラにおいていい？
+    plugin = std::make_shared<PluginBase>("simple_texture");
+}
+
+BaseGL::~BaseGL() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(img_window);
+    glfwTerminate();
+    return;
+}
 
 void BaseGL::initGL() {
     // initialize glfw
@@ -21,7 +37,7 @@ void BaseGL::initGL() {
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); //
 
     // Open a window and create its OpenGL context
-    img_window = glfwCreateWindow(width, height, "SimpleGL", NULL, NULL);
+    img_window = glfwCreateWindow(width, height, "Debug Window", NULL, NULL);
     if (img_window == NULL) {
         std::cout << "failed to open window" << std::endl;
         glfwTerminate();
@@ -63,7 +79,7 @@ void BaseGL::initImgui() {
 
 
 void BaseGL::draw() {
-    initDraw();
+    plugin->initDraw();
 
     int framecount = 0;
     double current, previous = glfwGetTime();
@@ -73,11 +89,12 @@ void BaseGL::draw() {
         glfwMakeContextCurrent(img_window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        loadGLObjects();
-
-        drawGL();  // virtual : open gl objects の描画処理
-        drawImgui();  // virtual : imgui の描画処理
+        plugin->loadGLObjects();
+        plugin->drawGL();
+        drawImguiMenu();  // virtual : imgui の描画処理
+        plugin->drawImgui();
         checkKeyboardAndMouseInput();
+        plugin->checkKeyboardAndMouseInput();
 
         // show Frame Per Seconds (fps) on window title
         current = glfwGetTime();
@@ -92,11 +109,65 @@ void BaseGL::draw() {
         
         // frame rate to 30 fps
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
-            
+
         glClear(GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(img_window);
         glfwPollEvents();
+    }
+}
+
+
+void BaseGL::drawImguiMenu() {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    {
+        // menu bar (一番上のバー)
+        // ファイルのセーブ(未実装)・ロードなど
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Save")) {
+                    
+                }
+                if (ImGui::MenuItem("Load")) {
+                    
+                }
+                if (ImGui::MenuItem("Open file")) {
+                    char c_filename[1024];
+                    FILE *fp = popen("zenity --file-selection", "r");
+                    fgets(c_filename, 1024, fp);
+                    pclose(fp);
+                    std::string filename(c_filename);
+                    filename.erase(std::remove(filename.begin(), filename.end(), '\n'), filename.end());
+                    cv::Mat img = cv::imread(filename);
+                    if (img.data == nullptr) {
+                        fmt::print("{} is not a valid image file.\n", filename);
+                    } else {
+                        addFrame(img);
+                    }
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Style")) {
+                auto themes = imgui_theme.getAllThemeNames();
+                for (auto && theme : themes) {
+                    if (ImGui::MenuItem(theme.c_str())) {
+                        imgui_theme.setCurrentTheme(theme);
+                    }
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Plugin")) {
+                for (auto && plug_name : plugin_names) {
+                    if (ImGui::MenuItem(plug_name)) {
+                        
+                    }
+                }
+            }
+            ImGui::EndMainMenuBar();
+        }
     }
 }
 

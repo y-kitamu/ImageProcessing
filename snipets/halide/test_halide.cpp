@@ -11,14 +11,14 @@
 #include <cmdline/cmdline.h>
 #include <halide/HalideBuffer.h>  // #include <halide/Halide.h> だとコンパイルエラーになった ???
 
-#include "gl/simple.hpp"
+#include "gl/base.hpp"
 #include "debug_util/utility.hpp"
 #include "halide/halide_sobel.h"
 #include "halide/halide_normalize.h"
 
 
 std::pair<cv::Mat, cv::Mat> sobelFilter(cv::Mat &src) {
-    auto& window = gl::SimpleGL::getInstance();
+    auto& window = gl::BaseGL::getInstance();
     Halide::Runtime::Buffer<uint8_t> input =
         Halide::Runtime::Buffer<uint8_t>::make_interleaved(src.ptr(), src.cols, src.rows, src.channels());
     Halide::Runtime::Buffer<float> output_gray(src.cols, src.rows);
@@ -75,7 +75,7 @@ int main(int argc, char ** argv) {
     cv::Mat normalized_x = normalize(sobel.first);
     cv::Mat normalized_y = normalize(sobel.second);
 
-    gl::SimpleGL& window = gl::SimpleGL::getInstance(); //gl::SimpleGL();
+    gl::BaseGL& window = gl::BaseGL::getInstance(); //gl::SimpleGL();
 
     window.addFrame(mat);
     window.addFrame(sobel.first);
