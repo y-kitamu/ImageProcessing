@@ -1,4 +1,5 @@
 #include "base.hpp"
+#include "plugin_simple.hpp"
 
 
 namespace gl {
@@ -9,7 +10,7 @@ BaseGL::BaseGL() {
 
     glfwSetWindowSizeCallback(img_window, windowSizeCallback);
     // callback を基底クラスと派生クラスにバラバラにおいていい？
-    plugin = std::make_shared<PluginBase>("simple_texture");
+    plugin = std::make_shared<PluginSimple>();
 }
 
 BaseGL::~BaseGL() {
@@ -159,13 +160,13 @@ void BaseGL::drawImguiMenu() {
                 }
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Plugin")) {
-                for (auto && plug_name : plugin_names) {
-                    if (ImGui::MenuItem(plug_name)) {
+            // if (ImGui::BeginMenu("Plugin")) {
+            //     for (auto && plug_name : plugin_names) {
+            //         if (ImGui::MenuItem(plug_name)) {
                         
-                    }
-                }
-            }
+            //         }
+            //     }
+            // }
             ImGui::EndMainMenuBar();
         }
     }

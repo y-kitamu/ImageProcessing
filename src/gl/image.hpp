@@ -31,24 +31,18 @@ class Image {
     void load();
     void draw();
 
-    template<class T>
-    void updateParams() {
-        // reflect and retain changes made by callbacks 
-        image_width = T::getImageWidth();
-        image_height = T::getImageHeight();
-        scale = T::getScale();
-        offset_x = T::getOffsetX();
-        offset_y = T::getOffsetY();
-        
-        points.updateGLPts();
-    }
-
     int getImageWidth() { return image_width; }
     int getImageHeight() { return image_height; }
     float getScale() { return scale; }
     float getOffsetX() { return offset_x; }
     float getOffsetY() { return offset_y; }
 
+    void setImageWidth(int width) { image_width = width; }
+    void setImageHeihgt(int height) { image_height = height; }
+    void setScale(float s) { scale = s; }
+    void setOffsetX(float off_x) { offset_x = off_x; }
+    void setOffsetY(float off_y) { offset_y = off_y; }
+    
   public:
     Points points;
     
