@@ -10,6 +10,7 @@
 #include <fmt/format.h>
 #include <cmdline/cmdline.h>
 #include <halide/HalideBuffer.h>  // #include <halide/Halide.h> だとコンパイルエラーになった ???
+#include <Eigen/Eigen>
 
 #include "gl/base.hpp"
 #include "debug_util/utility.hpp"

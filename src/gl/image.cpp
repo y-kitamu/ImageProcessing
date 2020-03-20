@@ -120,4 +120,9 @@ void Image::draw() {
     glUseProgram(0);
 }
 
+void Image::addPoint(Eigen::Vector2d pt) {
+    points.addPoint(pt);
+}
+
+
 }

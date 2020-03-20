@@ -31,6 +31,8 @@ class Image {
     void load();
     void draw();
 
+    void addPoint(Eigen::Vector2d pt);
+
     int getImageWidth() { return image_width; }
     int getImageHeight() { return image_height; }
     float getScale() { return scale; }
@@ -44,7 +46,6 @@ class Image {
     void setOffsetY(float off_y) { offset_y = off_y; }
     
   public:
-    Points points;
     
   private:
     cv::Mat image;
@@ -59,6 +60,8 @@ class Image {
     int image_width, image_height;
     float scale = 1.0f;
     float offset_x = 0.0f, offset_y = 0.0f;
+    
+    Points points;
 };
 
 }

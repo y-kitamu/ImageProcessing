@@ -9,7 +9,6 @@
 #include <Eigen/Eigen>
 
 #include "gl/base.hpp"
-#include "debug_util/utility.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -18,8 +17,6 @@ int main(int argc, char ** argv) {
     // 正方形の画像はうまく表示されたけど、長方形だと変になる
     // gpu driver によって違う？
 
-    util::startLogging(argc, argv, __FILE__);
-    
     std::string filename =
         (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
     std::string shader_dir =
@@ -39,7 +36,7 @@ int main(int argc, char ** argv) {
     fmt::print("image (width x height) : {} x {}\n", img.cols, img.rows);
     
     // gl::SimpleGL window = gl::SimpleGL();
-    gl::BaseGL window = gl::BaseGL::getInstance();
+    gl::BaseGL& window = gl::BaseGL::getInstance();
 
     auto debug_image0 = window.addFrame(img);
     auto debug_image1 = window.addFrame(img);
@@ -55,5 +52,4 @@ int main(int argc, char ** argv) {
     window.draw();
     gl::BaseGL::destroy();
 
-    util::stopLogging();
 }

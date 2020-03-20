@@ -6,3 +6,5 @@ GTAGS
 GRTAGS
 snipets/*/halide/*.h
 prof/
+*#
+.ccls-cache

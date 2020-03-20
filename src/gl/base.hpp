@@ -26,18 +26,21 @@ class BaseGL {
      * BaseGL は window の表示、menu bar の表示を行い、image object を保持する。
      * Plugin に object を描画させる。
      * BaseGL は singleton で getInstance から instance を取得する。
+     * 
+     * auto window = gl::BaseGL::getInstance();
+     * window->addFrame(cv::Mat mat);
+     * window->draw();  // show image (stop by Esc)
+     * window->destroy(); // destroy window
      */
   protected:
     BaseGL();
 
   public:
     static BaseGL& getInstance() {
+        // 返り値はpointerじゃなくていい?
         auto func = []() { create(); };
         std::call_once(init_flag, func);
         return *singleton;
-    }
-    static void create() {
-        singleton = std::unique_ptr<BaseGL>(new BaseGL());
     }
     static void destroy() {
         singleton.release();
@@ -45,16 +48,19 @@ class BaseGL {
     ~BaseGL();
     void draw(); // main loop function
     
-    // callbacks
-    static void windowSizeCallback(GLFWwindow* window, int w, int h);
-    
     std::shared_ptr<Image> addFrame(const cv::Mat &mat) {
         auto frame = std::make_shared<Image>(mat);
         frames.emplace_back(frame);
         return frame;
     }
+    
+    // callbacks
+    static void windowSizeCallback(GLFWwindow* window, int w, int h);
 
   private:
+    static void create() {
+        singleton = std::unique_ptr<BaseGL>(new BaseGL());
+    }
     // functions called in the constructor
     void initGL();
     void initImgui();
