@@ -54,9 +54,6 @@ class BaseGL {
         return frame;
     }
     
-    // callbacks
-    static void windowSizeCallback(GLFWwindow* window, int w, int h);
-
   private:
     static void create() {
         singleton = std::unique_ptr<BaseGL>(new BaseGL());
@@ -67,6 +64,10 @@ class BaseGL {
 
     void drawImguiMenu();
     void checkKeyboardAndMouseInput();
+    
+    // callbacks
+    static void windowSizeCallback(GLFWwindow* window, int w, int h);
+    static void framebufferSizeCallback(GLFWwindow * window, int w, int h);
     
     // debug call back function
     static void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, 

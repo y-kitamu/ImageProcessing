@@ -7,11 +7,8 @@
 #include <opencv2/opencv.hpp>
 
 #include "gl/base.hpp"
-#include "debug_util/utility.hpp"
 
 int main(int argc, char ** argv) {
-    util::startLogging(argc, argv, __FILE__);
-
     int img_size = 16;
     cv::Mat mat(img_size, img_size, CV_32FC1);
     cv::Mat mat_uint(img_size, img_size, CV_8UC1);
@@ -30,7 +27,5 @@ int main(int argc, char ** argv) {
     window.addFrame(mat_uint);
     window.draw();
     gl::BaseGL::destroy();
-    
-    util::stopLogging();
 }
 

@@ -12,10 +12,11 @@ namespace gl {
 void Point::updateGLPt() {
     gl_pt = BaseGL::plugin->imageCoord2GLCoord(img_pt);
     gl_pt.x() = 2 * gl_pt.x() * BaseGL::width_inv - 1;
-    gl_pt.y() = 2 * gl_pt.y() * BaseGL::height_inv - 1;
+    gl_pt.y() = 1 - 2 * gl_pt.y() * BaseGL::height_inv;
 }
 
 void Point::load(float half_point_width, float half_point_height) {
+    updateGLPt();
     float left = gl_pt.x() - half_point_width;
     float right = gl_pt.x() + half_point_width;
     float top = gl_pt.y() + half_point_height;
@@ -60,12 +61,14 @@ Points::Points() {
         (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
 }
 
-void Points::addPoint(Eigen::Vector2d pt) {
-    pts.emplace_back(Point(pt));
+void Points::addPoint(Eigen::Vector2d pt, Eigen::Vector4f color) {
+    pts.emplace_back(Point(pt, color));
 }
 
 
 void Points::load() {
+    norm_point_size = Eigen::Vector2d(
+        point_size.x() * BaseGL::width_inv, point_size.y() * BaseGL::height_inv);
     for (auto && pt : pts) {
         pt.load(norm_point_size.x(), norm_point_size.y());
     }
@@ -77,14 +80,6 @@ void Points::draw() {
         pt.draw();
     }
     glUseProgram(0);
-}
-
-void Points::updateGLPts() {
-    for (auto && pt : pts) {
-        pt.updateGLPt();
-    }
-    norm_point_size = Eigen::Vector2d(
-        point_size.x() * BaseGL::width_inv, point_size.y() * BaseGL::height_inv);
 }
 
 } // namespace gl

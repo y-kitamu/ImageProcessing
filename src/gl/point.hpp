@@ -24,16 +24,19 @@ class Point {
      * TODO : 高速化
      */
   public:
-    Point(Eigen::Vector2d ipt) : img_pt(ipt) {}
+    Point(Eigen::Vector2d ipt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5))
+        : img_pt(ipt), color(color) {}
 
-    void updateGLPt();
     void load(float half_point_width, float half_point_height);
     void draw();
 
   private:
+    void updateGLPt();
+    
+  private:
     const Eigen::Vector2d img_pt; // point location (image coordinate)
     Eigen::Vector2d gl_pt; // point location (gl window coordinate)
-    Eigen::Vector4f color = Eigen::Vector4f(1.0, 1.0, 1.0, 0.5);
+    Eigen::Vector4f color;
     GLuint vao, vbo;
     int vertices = 4;
 };
@@ -44,10 +47,9 @@ class Points {
      */
   public:
     Points();
-    void addPoint(Eigen::Vector2d pt);
+    void addPoint(Eigen::Vector2d pt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
     void load();
     void draw();
-    void updateGLPts();
     
   private:
     const std::string shader_basename = "point";

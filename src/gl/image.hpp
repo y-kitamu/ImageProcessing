@@ -31,7 +31,7 @@ class Image {
     void load();
     void draw();
 
-    void addPoint(Eigen::Vector2d pt);
+    void addPoint(Eigen::Vector2d pt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
 
     int getImageWidth() { return image_width; }
     int getImageHeight() { return image_height; }
@@ -58,8 +58,8 @@ class Image {
     GLenum texture_internal_format; //テクスチャを opengl 内部でどう保持するかを指定
     GLenum pixel_format; // pixel のフォーマットを指定
     int image_width, image_height;
-    float scale = 1.0f;
-    float offset_x = 0.0f, offset_y = 0.0f;
+    float scale = 1.0f; 
+    float offset_x = 0.0f, offset_y = 0.0f; // 画面上での画像の offset (window正規化座標(-1.0~1.0))
     
     Points points;
 };

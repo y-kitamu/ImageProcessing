@@ -13,7 +13,6 @@
 #include <Eigen/Eigen>
 
 #include "gl/base.hpp"
-#include "debug_util/utility.hpp"
 #include "halide/halide_sobel.h"
 #include "halide/halide_normalize.h"
 
@@ -61,8 +60,6 @@ cv::Mat normalize(cv::Mat &src) {
 }
 
 int main(int argc, char ** argv) {
-    util::startLogging(argc, argv, __FILE__);
-
     std::string filename =
         (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
     
@@ -86,5 +83,4 @@ int main(int argc, char ** argv) {
     window.draw();
     window.destroy();
 
-    util::stopLogging();
 }

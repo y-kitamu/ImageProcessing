@@ -18,9 +18,9 @@ int main(int argc, char ** argv) {
     // gpu driver によって違う？
 
     std::string filename =
-        (fs::path(__FILE__).parent_path() / fs::path("../../data/img/Lenna.png")).generic_string();
+        (fs::absolute(fs::path(__FILE__).parent_path()) / fs::path("../../data/img/Lenna.png")).generic_string();
     std::string shader_dir =
-        (fs::path(__FILE__).parent_path() / fs::path("../src/gl/shader")).generic_string();
+        (fs::absolute(fs::path(__FILE__).parent_path()) / fs::path("../src/gl/shader")).generic_string();
     
     cmdline::parser parser;
     parser.add<std::string>("src", 's', "src image filename", false, filename);
@@ -46,7 +46,7 @@ int main(int argc, char ** argv) {
     std::uniform_real_distribution<> dist(0.0, 512.0);
     for (int i = 0; i < 512; i++) {
         double x = dist(engine), y = dist(engine);
-        debug_image0->points.addPoint(Eigen::Vector2d(x, y));
+        debug_image0->addPoint(Eigen::Vector2d(x, y));
     }
     
     window.draw();

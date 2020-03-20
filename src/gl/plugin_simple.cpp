@@ -28,7 +28,6 @@ void PluginSimple::setTexture() {
 }
 
 void PluginSimple::loadGLObjects() {
-    BaseGL::frames[frame_idx]->points.updateGLPts();
     BaseGL::frames[frame_idx]->load();
 }
 
@@ -57,7 +56,8 @@ void PluginSimple::drawImgui() {
         ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0), 0);
         if (ImGui::Begin("", nullptr, (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar))) {
-            ImGui::Text("(x, y) = (%.1f, %.1f)", cursor_img_pt.x(), cursor_img_pt.y());
+            ImGui::Text("(x, y) = (%.1f, %.1f), (%.2f, %.2f)",
+                        cursor_img_pt.x(), cursor_img_pt.y(), xpos, ypos);
         }
     }
     ImGui::Render();
@@ -108,10 +108,10 @@ Eigen::Vector2d PluginSimple::imageCoord2GLCoordImpl(Eigen::Vector2d img_pt) {
     float aspect_ratio = (float)image_height / image_width * BaseGL::width / BaseGL::height;
     Eigen::Vector2d gl_pt;
 
-    gl_pt.x() = (img_pt.x() * scale / image_width + 1.0f + offset_x - scale * 0.5)
-        / (2 * BaseGL::width_inv);
-    gl_pt.y() = (img_pt.y() * scale * BaseGL::width / (image_width * BaseGL::height)
-                 + 1.0f + offset_y - scale * 0.5 * aspect_ratio) / (2 * BaseGL::height_inv);
+    gl_pt.x() = (img_pt.x() * scale / image_width + offset_x - scale * 0.5 + 1.0f)
+        * 0.5 * BaseGL::width;
+    gl_pt.y() = (1 - ((1 - img_pt.y() / image_height) * scale * aspect_ratio + offset_y -
+                      scale * 0.5 * aspect_ratio + 1.0f) * 0.5) * BaseGL::height;
     return gl_pt;
 }
 
@@ -132,9 +132,9 @@ Eigen::Vector2d PluginSimple::glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt) {
     
     img_pt.x() = (2.0 * gl_pt.x() * BaseGL::width_inv - 1.0 - offset_x + scale * 0.5)
         * image_width / scale;
-    img_pt.y() = (2.0 * gl_pt.y() * BaseGL::height_inv - 1.0 + offset_y + scale * 0.5 * aspect_ratio)
-        * BaseGL::height / BaseGL::width * image_width / scale;
-
+    img_pt.y() = (1 - ((1 - gl_pt.y() * BaseGL::height_inv) * 2 - 1.0 - offset_y +
+                       scale * 0.5 * aspect_ratio) / (scale * aspect_ratio)) * image_height;
+    
     return img_pt;
 }
 

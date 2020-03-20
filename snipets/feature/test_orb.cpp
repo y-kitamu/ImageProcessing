@@ -31,11 +31,14 @@ int main(int argc, char ** argv) {
     std::cout << "Profiling to " << save_path << std::endl;
     // end logging codes
 
+    std::string filename;
     if (argc != 2) {
-        fmt::print("Usage :  \n.   /<path>/<to>/feature_test_orb <image filename>\n");
-        std::exit(EXIT_FAILURE);
+        fmt::print("Usage :  \n    ./<path>/<to>/feature_test_orb <image filename>\n");
+        filename = (fs::absolute(fs::path(__FILE__).parent_path()) /
+                    fs::path("../../data/img/Lenna.png")).generic_string();
+    } else {
+        filename = argv[1];
     }
-    std::string filename = argv[1];
     cv::Mat mat = cv::imread(filename);
 
     cv::Ptr<cv::Feature2D> ptr =
@@ -52,6 +55,8 @@ int main(int argc, char ** argv) {
         Eigen::Vector2d pt(kpt.pt.x, kpt.pt.y);
         debug_image->addPoint(pt);
     }
+
+    window.draw();
     
     ProfilerStop();
 }

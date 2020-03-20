@@ -9,6 +9,7 @@ BaseGL::BaseGL() {
     initImgui();
 
     glfwSetWindowSizeCallback(img_window, windowSizeCallback);
+    glfwSetFramebufferSizeCallback(img_window, framebufferSizeCallback);
     // callback を基底クラスと派生クラスにバラバラにおいていい？
     plugin = std::make_shared<PluginSimple>();
 }
@@ -182,6 +183,10 @@ void BaseGL::checkKeyboardAndMouseInput() {
 void BaseGL::windowSizeCallback(GLFWwindow* window, int w, int h) {
     width = w; height = h;
     width_inv = 1.0f / w, height_inv = 1.0f / h;
+}
+
+void BaseGL::framebufferSizeCallback(GLFWwindow* window, int w, int h) {
+    glViewport(0, 0, w, h);
 }
 
 void APIENTRY BaseGL::glDebugOutput(GLenum source,  GLenum type, GLuint id, GLenum severity, 
