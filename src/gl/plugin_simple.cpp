@@ -66,7 +66,7 @@ void PluginSimple::drawImgui() {
 
 void PluginSimple::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
     float scale = BaseGL::frames[frame_idx]->getScale();
-    scale += mouse_scroll_scale * yoffset;
+    scale += scale * mouse_scroll_scale * yoffset;
     if (scale < 0.3) {
         scale = 0.3;
     }

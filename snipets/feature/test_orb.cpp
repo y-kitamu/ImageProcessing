@@ -42,7 +42,7 @@ int main(int argc, char ** argv) {
     cv::Mat mat = cv::imread(filename);
 
     cv::Ptr<cv::Feature2D> ptr =
-        cv::ORB::create(500, 1.2f, __k8, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
+        cv::ORB::create(500, 1.2f, 8, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
     std::vector<cv::KeyPoint> kpts;
     cv::Mat descriptors;
     ptr->detect(mat, kpts);
