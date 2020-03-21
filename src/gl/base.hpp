@@ -18,6 +18,7 @@
 #include "plugin_base.hpp"
 #include "plugin_simple.hpp"
 #include "plugin_multi.hpp"
+#include "line.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -34,6 +35,18 @@ class BaseGL {
      * window->draw();  // show image (stop by Esc)
      * window->destroy(); // destroy window
      */
+  public:
+    class Viewport {
+      public:
+        constexpr static int LEFT = 1;
+        constexpr static int RIGHT = 2;
+        constexpr static int ALL = 0;
+    };
+    class PluginNames {
+      public:
+        const inline static std::string SIMPLE = "Simple";
+        const inline static std::string MULTI = "Multi";
+    };
   protected:
     BaseGL();
 
@@ -54,6 +67,11 @@ class BaseGL {
         auto frame = std::make_shared<Image>(mat);
         frames.emplace_back(frame);
         return frame;
+    }
+
+    void addLine(std::shared_ptr<Point> pt0, std::shared_ptr<Point> pt1,
+                 Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5)) {
+        lines.addLine(pt0, pt1, color);
     }
     
   private:
@@ -77,6 +95,7 @@ class BaseGL {
 
   public:
     static constexpr const char* glsl_version = "#version 330";
+    inline static const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
     
     inline static int width = 1024, height = 768; // window width and height
     inline static int view_width = width, view_height = height;
@@ -85,11 +104,12 @@ class BaseGL {
     // const char* glsl_version = "#version 460 core";
 
     const std::vector<std::pair<std::string, std::function<std::shared_ptr<PluginBase>()>>> plugins {
-        {"Simple", std::make_shared<PluginSimple>},
-        {"Multi", std::make_shared<PluginMulti>}
+        {PluginNames::SIMPLE, std::make_shared<PluginSimple>},
+        {PluginNames::MULTI, std::make_shared<PluginMulti>}
     };
     inline static std::shared_ptr<PluginBase> plugin;
     inline static std::vector<std::shared_ptr<Image>> frames = std::vector<std::shared_ptr<Image>>();
+    inline static Lines lines;
     
   private:
     ImGuiStyleColor imgui_theme;

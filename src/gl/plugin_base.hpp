@@ -41,6 +41,8 @@ class PluginBase {
     virtual void drawImgui() = 0;
     virtual void checkKeyboardAndMouseInput() {};
 
+    virtual std::string getName() = 0;
+    
   public:
     inline static GLuint shader_program_id;
 

@@ -49,12 +49,14 @@ int main(int argc, char ** argv) {
     ptr->compute(mat, kpts, descriptors);
 
     auto window = gl::BaseGL::getInstance();
-    std::shared_ptr<gl::Image> debug_image = window.addFrame(mat);
-    window.addFrame(mat);
+    std::shared_ptr<gl::Image> debug_image0 = window.addFrame(mat);
+    std::shared_ptr<gl::Image> debug_image1 = window.addFrame(mat);
 
     for (auto && kpt : kpts) {
         Eigen::Vector2d pt(kpt.pt.x, kpt.pt.y);
-        debug_image->addPoint(pt);
+        auto pt0 = debug_image0->addPoint(pt);
+        auto pt1 = debug_image1->addPoint(pt);
+        window.addLine(pt0, pt1);
     }
 
     filename = "/home/kitamura/work/ImageProcessing/data/img/sample01/sample01_0.png";

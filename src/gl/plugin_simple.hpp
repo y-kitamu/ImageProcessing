@@ -32,14 +32,16 @@ class PluginSimple: public PluginBase {
     void loadGLObjects() override;
     void drawGL() override;
     void drawImgui() override;
+
+    std::string getName() override;
     
     static void setViewport();
 
+  public:
+    inline static int frame_idx = 0;  // 表示する画像の index
   private:
     const std::string shader_basename = "simple_texture";
-    const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
 
-    inline static int frame_idx = 0;  // 表示する画像の index
     inline static bool is_left_button_pressed = false, is_pressed_in_image = false;
 };
 

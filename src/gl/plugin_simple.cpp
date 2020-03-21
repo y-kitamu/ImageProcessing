@@ -17,8 +17,8 @@ PluginSimple::PluginSimple() {
     glfwSetFramebufferSizeCallback(BaseGL::img_window, framebufferSizeCallback);
 
     shader_program_id = setShader(
-        (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
-        (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
+        (BaseGL::shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
+        (BaseGL::shader_dir / fs::path(shader_basename + ".frag")).generic_string());
 
     imageCoord2GLCoord = [](Eigen::Vector2d img_pt) {
         return imageCoord2GLCoordImpl(img_pt, frame_idx);
@@ -36,16 +36,22 @@ PluginSimple::PluginSimple() {
     glViewport(0, 0, BaseGL::view_width, BaseGL::view_height);
 }
 
+std::string PluginSimple::getName() {
+    return BaseGL::PluginNames::SIMPLE;
+}
+
 void PluginSimple::setTexture() {
     BaseGL::frames[frame_idx]->setTexture();
 }
 
 void PluginSimple::loadGLObjects() {
     BaseGL::frames[frame_idx]->load();
+    BaseGL::lines.load();
 }
 
 void PluginSimple::drawGL() {
     BaseGL::frames[frame_idx]->draw();
+    BaseGL::lines.draw();
 }
 
 void PluginSimple::drawImgui() {

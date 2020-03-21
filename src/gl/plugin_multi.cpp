@@ -15,8 +15,12 @@ PluginMulti::PluginMulti() {
     glfwSetCursorPosCallback(BaseGL::img_window, cursorCallback);
 
     shader_program_id = setShader(
-        (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
-        (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
+        (BaseGL::shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
+        (BaseGL::shader_dir / fs::path(shader_basename + ".frag")).generic_string());
+}
+
+std::string PluginMulti::getName() {
+    return BaseGL::PluginNames::MULTI;
 }
 
 void PluginMulti::setTexture() {
@@ -25,32 +29,34 @@ void PluginMulti::setTexture() {
 }
 
 void PluginMulti::loadGLObjects() {
-    setViewport(1);
+    setViewport(BaseGL::Viewport::LEFT);
     BaseGL::frames[first_frame_idx]->load();
-    setViewport(2);
+    setViewport(BaseGL::Viewport::RIGHT);
     BaseGL::frames[second_frame_idx]->load();
-    setViewport(0);
+    setViewport(BaseGL::Viewport::ALL);
+    BaseGL::lines.load();
 }
 
 void PluginMulti::drawGL() {
-    setViewport(1);
+    setViewport(BaseGL::Viewport::LEFT);
     BaseGL::frames[first_frame_idx]->draw();
-    setViewport(2);
+    setViewport(BaseGL::Viewport::RIGHT);
     BaseGL::frames[second_frame_idx]->draw();
-    setViewport(0);
+    setViewport(BaseGL::Viewport::ALL);
+    BaseGL::lines.draw();
 }
 
 void PluginMulti::setViewport(int view_idx) {
     switch (view_idx) {
-    case 0:
+    case BaseGL::Viewport::ALL:
         setViewport(0, 0, BaseGL::width, BaseGL::height);
         drawing_frame_idx = -1;
         break;
-    case 1:
+    case BaseGL::Viewport::LEFT:
         setViewport(0, 0, BaseGL::width / 2, BaseGL::height);
         drawing_frame_idx = first_frame_idx;
         break;
-    case 2:
+    case BaseGL::Viewport::RIGHT:
         setViewport(BaseGL::width / 2, 0, BaseGL::width / 2, BaseGL::height);
         drawing_frame_idx = second_frame_idx;
         break;
@@ -135,10 +141,10 @@ void PluginMulti::calcCursorPointView() {
     double xpos, ypos;
     glfwGetCursorPos(BaseGL::img_window, &xpos, &ypos);
     if (xpos * 2 < BaseGL::width) {
-        setViewport(1);
+        setViewport(BaseGL::Viewport::LEFT);
         focused_frame_idx = first_frame_idx;
     } else {
-        setViewport(2);
+        setViewport(BaseGL::Viewport::RIGHT);
         focused_frame_idx = second_frame_idx;
     }
 }
@@ -147,13 +153,13 @@ void PluginMulti::calcCursorPointFrame(double x, double y) {
     /*
      * Return frame index if cursor is on the frame else -1
      */
-    setViewport(1);
+    setViewport(BaseGL::Viewport::LEFT);
     if (isPointInImage(x, y)) {
         focused_frame_idx = first_frame_idx;
         return;
     }
     x = x - BaseGL::view_width;
-    setViewport(2);
+    setViewport(BaseGL::Viewport::RIGHT);
     if (isPointInImage(x, y)) {
         focused_frame_idx = second_frame_idx;
         return;

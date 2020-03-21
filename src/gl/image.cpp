@@ -42,6 +42,10 @@ Image::Image(const cv::Mat &img) : image(img) {
     image_height = image.rows;
 }
 
+void Image::setShader() {
+    points.setShader();
+}
+
 void Image::setTexture() {
     // constructor に統一できる? (その時のメモリサイズは大丈夫?)
     // テクスチャ
@@ -120,8 +124,15 @@ void Image::draw() {
     glUseProgram(0);
 }
 
-void Image::addPoint(Eigen::Vector2d pt, Eigen::Vector4f color) {
-    points.addPoint(pt, color);
+std::shared_ptr<Point> Image::addPoint(Eigen::Vector2d pt, Eigen::Vector4f color) {
+    int frame_idx = 0;
+    for (auto && ptr : BaseGL::frames) {
+        if (ptr.get() == this) {
+            break;
+        }
+        frame_idx++;
+    }
+    return points.addPoint(pt, frame_idx, color);
 }
 
 }

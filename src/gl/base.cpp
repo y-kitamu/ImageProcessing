@@ -9,6 +9,8 @@ BaseGL::BaseGL() {
     initImgui();
 
     plugin = std::make_shared<PluginSimple>();
+    Points::setShader();
+    Lines::setShader();
 }
 
 BaseGL::~BaseGL() {

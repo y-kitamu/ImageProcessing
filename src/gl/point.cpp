@@ -50,34 +50,35 @@ void Point::load(float half_point_width, float half_point_height) {
 }
 
 void Point::draw() {
+    glUseProgram(Points::program_id);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
 }
 
 
-Points::Points() {
-    program_id = setShader(
-        (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
-        (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
+void Points::setShader() {
+    program_id = gl::setShader(
+        (BaseGL::shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
+        (BaseGL::shader_dir / fs::path(shader_basename + ".frag")).generic_string());
 }
 
-void Points::addPoint(Eigen::Vector2d pt, Eigen::Vector4f color) {
-    pts.emplace_back(Point(pt, color));
+std::shared_ptr<Point> Points::addPoint(Eigen::Vector2d pt, int frame_idx, Eigen::Vector4f color) {
+    pts.emplace_back(std::make_shared<Point>(pt, frame_idx, color));
+    return pts.back();
 }
-
 
 void Points::load() {
     norm_point_size = Eigen::Vector2d(
         point_size.x() * BaseGL::width_inv, point_size.y() * BaseGL::height_inv);
     for (auto && pt : pts) {
-        pt.load(norm_point_size.x(), norm_point_size.y());
+        pt->load(norm_point_size.x(), norm_point_size.y());
     }
 }
 
 void Points::draw() {
     glUseProgram(program_id);
     for (auto && pt : pts) {
-        pt.draw();
+        pt->draw();
     }
     glUseProgram(0);
 }

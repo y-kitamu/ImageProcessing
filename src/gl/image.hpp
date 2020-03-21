@@ -27,11 +27,13 @@ class Image {
      */
   public:
     Image(const cv::Mat &img);
+    void setShader();
     void setTexture();
     void load();
     void draw();
 
-    void addPoint(Eigen::Vector2d pt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
+    std::shared_ptr<Point> addPoint(Eigen::Vector2d pt,
+                                    Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
 
     int getImageWidth() { return image_width; }
     int getImageHeight() { return image_height; }

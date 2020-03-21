@@ -24,11 +24,14 @@ class Point {
      * TODO : 高速化
      */
   public:
-    Point(Eigen::Vector2d ipt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5))
-        : img_pt(ipt), color(color) {}
+    Point(Eigen::Vector2d ipt, int frame_idx, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5))
+        : img_pt(ipt), frame_idx(frame_idx), color(color) {}
 
     void load(float half_point_width, float half_point_height);
     void draw();
+
+    Eigen::Vector2d getGLPt() { return gl_pt; }
+    int getFrameIndex() { return frame_idx; }
 
   private:
     void updateGLPt();
@@ -36,6 +39,7 @@ class Point {
   private:
     const Eigen::Vector2d img_pt; // point location (image coordinate)
     Eigen::Vector2d gl_pt; // point location (gl window coordinate)
+    int frame_idx;
     Eigen::Vector4f color;
     GLuint vao, vbo;
     int vertices = 4;
@@ -46,17 +50,18 @@ class Points {
      * 点の情報を保持する
      */
   public:
-    Points();
-    void addPoint(Eigen::Vector2d pt, Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
+    static void setShader();
+    std::shared_ptr<Point> addPoint(Eigen::Vector2d pt, int frame_idx,
+                    Eigen::Vector4f color=Eigen::Vector4f(1.0, 1.0, 1.0, 0.5));
     void load();
     void draw();
     
   private:
-    const std::string shader_basename = "point";
-    const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
-    std::vector<Point> pts;
-    GLuint program_id;
+    inline static const std::string shader_basename = "point";
+    std::vector<std::shared_ptr<Point>> pts;
     Eigen::Vector2d point_size = Eigen::Vector2d(10, 10), norm_point_size;
+  public:
+    inline static GLuint program_id;
 };
 
 }
