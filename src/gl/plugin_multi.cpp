@@ -44,21 +44,25 @@ void PluginMulti::setViewport(int view_idx) {
     switch (view_idx) {
     case 0:
         setViewport(0, 0, BaseGL::width, BaseGL::height);
+        drawing_frame_idx = -1;
         break;
     case 1:
         setViewport(0, 0, BaseGL::width / 2, BaseGL::height);
-        frame_idx = first_frame_idx;
+        drawing_frame_idx = first_frame_idx;
         break;
     case 2:
         setViewport(BaseGL::width / 2, 0, BaseGL::width / 2, BaseGL::height);
-        frame_idx = second_frame_idx;
+        drawing_frame_idx = second_frame_idx;
         break;
     }
     imageCoord2GLCoord = [](Eigen::Vector2d img_pt) {
-        return imageCoord2GLCoordImpl(img_pt, frame_idx);
+        return imageCoord2GLCoordImpl(img_pt, drawing_frame_idx);
     };
     glCoord2ImageCoord = [](Eigen::Vector2d gl_pt) {
-        return glCoord2ImageCoordImpl(gl_pt, frame_idx);
+        return glCoord2ImageCoordImpl(gl_pt, drawing_frame_idx);
+    };
+    isPointInImage = [](double x, double y) {
+        return isPointInImageImpl(x, y, drawing_frame_idx);
     };
 }
 
@@ -87,6 +91,43 @@ void PluginMulti::drawImgui() {
     ImGui::Render();
 }
 
+void PluginMulti::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
+    calcCursorPointView();
+    float scale = BaseGL::frames[focused_frame_idx]->getScale();
+    scale += scale * mouse_scroll_scale * yoffset;
+    if (scale < 0.3) {
+        scale = 0.3;
+    }
+    BaseGL::frames[focused_frame_idx]->setScale(scale);
+}
+
+void PluginMulti::mouseCallback(GLFWwindow *window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        is_left_button_pressed = true;
+        calcCursorPointFrame(xpos, ypos);
+        glfwGetCursorPos(window, &prev_xpos, &prev_ypos);
+    }
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        is_left_button_pressed = false;
+        focused_frame_idx = -1;
+    }
+}
+
+void PluginMulti::cursorCallback(GLFWwindow * window, double x, double y) {
+    xpos = x; ypos = y;
+    if (is_left_button_pressed && focused_frame_idx != -1 && !ImGui::IsAnyItemActive()) {
+        int view_idx = focused_frame_idx == first_frame_idx ? 1 : 2;
+        setViewport(view_idx);
+        float offset_x = BaseGL::frames[focused_frame_idx]->getOffsetX();
+        float offset_y = BaseGL::frames[focused_frame_idx]->getOffsetY();
+        offset_x += 2 * (xpos - prev_xpos) * BaseGL::width_inv;
+        offset_y -= 2 * (ypos - prev_ypos) * BaseGL::height_inv;
+        prev_xpos = xpos; prev_ypos = ypos;
+        BaseGL::frames[focused_frame_idx]->setOffsetX(offset_x);
+        BaseGL::frames[focused_frame_idx]->setOffsetY(offset_y);
+    }
+}
+
 void PluginMulti::calcCursorPointView() {
     /*
      * cursor がある位置の viewport をsetして、画像のframe_idx を返す。
@@ -95,36 +136,29 @@ void PluginMulti::calcCursorPointView() {
     glfwGetCursorPos(BaseGL::img_window, &xpos, &ypos);
     if (xpos * 2 < BaseGL::width) {
         setViewport(1);
-        frame_idx = first_frame_idx;
+        focused_frame_idx = first_frame_idx;
     } else {
         setViewport(2);
-        frame_idx =  second_frame_idx;
+        focused_frame_idx = second_frame_idx;
     }
 }
 
-void PluginMulti::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
-    calcCursorPointView();
-    float scale = BaseGL::frames[frame_idx]->getScale();
-    scale += scale * mouse_scroll_scale * yoffset;
-    if (scale < 0.3) {
-        scale = 0.3;
-    }
-    BaseGL::frames[frame_idx]->setScale(scale);
-}
-
-void PluginMulti::mouseCallback(GLFWwindow *window, int button, int action, int mods) {
-}
-
-void PluginMulti::cursorCallback(GLFWwindow * window, double xpos, double ypos) {
-    
-}
-
-int PluginMulti::isPointInImage(double x, double y) {
+void PluginMulti::calcCursorPointFrame(double x, double y) {
     /*
      * Return frame index if cursor is on the frame else -1
      */
-    
-    return -1;
+    setViewport(1);
+    if (isPointInImage(x, y)) {
+        focused_frame_idx = first_frame_idx;
+        return;
+    }
+    x = x - BaseGL::view_width;
+    setViewport(2);
+    if (isPointInImage(x, y)) {
+        focused_frame_idx = second_frame_idx;
+        return;
+    }
+    focused_frame_idx = -1;
 }
 
 } // namespace gl

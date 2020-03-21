@@ -48,4 +48,11 @@ Eigen::Vector2d PluginBase::glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt, int id
     return img_pt;
 }
 
+bool PluginBase::isPointInImageImpl(double x, double y, int idx) {
+    int image_width = BaseGL::frames[idx]->getImageWidth();
+    int image_height = BaseGL::frames[idx]->getImageHeight();
+    auto ipt = glCoord2ImageCoord(Eigen::Vector2d(x, y));
+    return 0 < ipt.x() && ipt.x() < image_width && 0 < ipt.y() && ipt.y() < image_height;
+}
+
 } // namespace gl

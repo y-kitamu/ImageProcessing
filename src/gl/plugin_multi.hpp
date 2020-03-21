@@ -27,17 +27,19 @@ class PluginMulti : public PluginBase {
     void drawGL() override;
     void drawImgui() override;
 
-    static int isPointInImage(double x, double y);
     static void setViewport(int view_idx);
     static void setViewport(int minx, int miny, int width, int height);
     static void calcCursorPointView();
+    static void calcCursorPointFrame(double x, double y);
 
   private:
     const std::string shader_basename = "simple_texture";
     const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
     
     inline static int first_frame_idx = 0, second_frame_idx = 1;  // 表示する画像の index
-    inline static int frame_idx = 0; 
+    inline static bool is_left_button_pressed = false;
+    inline static int drawing_frame_idx = 0;
+    inline static int focused_frame_idx = -1; // -1: none, used in cursor callback
 };
 
 }

@@ -26,6 +26,9 @@ PluginSimple::PluginSimple() {
     glCoord2ImageCoord = [](Eigen::Vector2d gl_pt) {
         return glCoord2ImageCoordImpl(gl_pt, frame_idx);
     };
+    isPointInImage = [](double x, double y) {
+        return isPointInImageImpl(x, y, frame_idx);
+    };
     BaseGL::view_width = BaseGL::width;
     BaseGL::view_height = BaseGL::height;
     BaseGL::width_inv = 1.f / BaseGL::width;
@@ -96,10 +99,10 @@ void PluginSimple::mouseCallback(GLFWwindow * window, int button, int action, in
 }
 
 void PluginSimple::cursorCallback(GLFWwindow * window, double x, double y) {
-    float offset_x = BaseGL::frames[frame_idx]->getOffsetX();
-    float offset_y = BaseGL::frames[frame_idx]->getOffsetY();
     xpos = x; ypos = y;
     if (is_left_button_pressed && is_pressed_in_image && !ImGui::IsAnyItemActive()) {
+        float offset_x = BaseGL::frames[frame_idx]->getOffsetX();
+        float offset_y = BaseGL::frames[frame_idx]->getOffsetY();
         offset_x += 2 * (xpos - prev_xpos) * BaseGL::width_inv;
         offset_y -= 2 * (ypos - prev_ypos) * BaseGL::height_inv;
         prev_xpos = xpos; prev_ypos = ypos;
@@ -117,13 +120,6 @@ void PluginSimple::framebufferSizeCallback(GLFWwindow* window, int w, int h) {
     glViewport(0, 0, w, h);
     BaseGL::view_width = w;
     BaseGL::view_height = h;
-}
-
-bool PluginSimple::isPointInImage(double x, double y) {
-    int image_width = BaseGL::frames[frame_idx]->getImageWidth();
-    int image_height = BaseGL::frames[frame_idx]->getImageHeight();
-    auto ipt = glCoord2ImageCoord(Eigen::Vector2d(x, y));
-    return 0 < ipt.x() && ipt.x() < image_width && 0 < ipt.y() && ipt.y() < image_height;
 }
 
 } // namespace gl

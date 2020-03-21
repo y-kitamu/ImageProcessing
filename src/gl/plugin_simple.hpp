@@ -33,7 +33,6 @@ class PluginSimple: public PluginBase {
     void drawGL() override;
     void drawImgui() override;
     
-    static bool isPointInImage(double x, double y);
     static void setViewport();
 
   private:
@@ -41,6 +40,7 @@ class PluginSimple: public PluginBase {
     const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
 
     inline static int frame_idx = 0;  // 表示する画像の index
+    inline static bool is_left_button_pressed = false, is_pressed_in_image = false;
 };
 
 } // namespace gl

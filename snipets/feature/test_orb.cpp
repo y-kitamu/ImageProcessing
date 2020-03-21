@@ -57,6 +57,10 @@ int main(int argc, char ** argv) {
         debug_image->addPoint(pt);
     }
 
+    filename = "/home/kitamura/work/ImageProcessing/data/img/sample01/sample01_0.png";
+    cv::Mat mat2 = cv::imread(filename);
+    window.addFrame(mat2);
+    
     window.draw();
     
     ProfilerStop();

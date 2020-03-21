@@ -25,9 +25,11 @@ class PluginBase {
 
     static inline std::function<Eigen::Vector2d(Eigen::Vector2d)> imageCoord2GLCoord;
     static inline std::function<Eigen::Vector2d(Eigen::Vector2d)> glCoord2ImageCoord;
+    static inline std::function<bool(double,double)> isPointInImage;
     
     static Eigen::Vector2d imageCoord2GLCoordImpl(Eigen::Vector2d img_pt, int frame_idx);
     static Eigen::Vector2d glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt, int frame_idx);
+    static bool isPointInImageImpl(double x, double y, int frame_idx);
 
     // BaseGL::draw() の最初に呼び出される
     void initDraw() {
@@ -45,7 +47,6 @@ class PluginBase {
   protected:
     static constexpr float mouse_scroll_scale = 0.10;
     inline static double prev_xpos = 0.0, prev_ypos = 0.0, xpos = 0.0, ypos = 0.0; // mouse position
-    inline static bool is_left_button_pressed = false, is_pressed_in_image = false;
     
     Eigen::Vector2d cursor_img_pt;
 };
