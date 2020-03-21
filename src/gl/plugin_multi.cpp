@@ -17,10 +17,6 @@ PluginMulti::PluginMulti() {
     shader_program_id = setShader(
         (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
         (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
-
-    imageCoord2GLCoord = imageCoord2GLCoordImpl;
-    glCoord2ImageCoord = glCoord2ImageCoordImpl;
-    isPointInImage = isPointInImageImpl;
 }
 
 void PluginMulti::setTexture() {
@@ -48,12 +44,22 @@ void PluginMulti::setViewport(int view_idx) {
     switch (view_idx) {
     case 0:
         setViewport(0, 0, BaseGL::width, BaseGL::height);
+        break;
     case 1:
         setViewport(0, 0, BaseGL::width / 2, BaseGL::height);
+        frame_idx = first_frame_idx;
         break;
     case 2:
         setViewport(BaseGL::width / 2, 0, BaseGL::width / 2, BaseGL::height);
-    } 
+        frame_idx = second_frame_idx;
+        break;
+    }
+    imageCoord2GLCoord = [](Eigen::Vector2d img_pt) {
+        return imageCoord2GLCoordImpl(img_pt, frame_idx);
+    };
+    glCoord2ImageCoord = [](Eigen::Vector2d gl_pt) {
+        return glCoord2ImageCoordImpl(gl_pt, frame_idx);
+    };
 }
 
 void PluginMulti::setViewport(int minx, int miny, int width, int height) {
@@ -81,7 +87,7 @@ void PluginMulti::drawImgui() {
     ImGui::Render();
 }
 
-int PluginMulti::calcCursorPointView() {
+void PluginMulti::calcCursorPointView() {
     /*
      * cursor がある位置の viewport をsetして、画像のframe_idx を返す。
      */
@@ -89,15 +95,15 @@ int PluginMulti::calcCursorPointView() {
     glfwGetCursorPos(BaseGL::img_window, &xpos, &ypos);
     if (xpos * 2 < BaseGL::width) {
         setViewport(1);
-        return first_frame_idx;
+        frame_idx = first_frame_idx;
     } else {
         setViewport(2);
-        return second_frame_idx;
+        frame_idx =  second_frame_idx;
     }
 }
 
 void PluginMulti::scrollCallback(GLFWwindow * window, double xoffset, double yoffset) {
-    int frame_idx = calcCursorPointView();
+    calcCursorPointView();
     float scale = BaseGL::frames[frame_idx]->getScale();
     scale += scale * mouse_scroll_scale * yoffset;
     if (scale < 0.3) {
@@ -107,23 +113,18 @@ void PluginMulti::scrollCallback(GLFWwindow * window, double xoffset, double yof
 }
 
 void PluginMulti::mouseCallback(GLFWwindow *window, int button, int action, int mods) {
-    
 }
 
 void PluginMulti::cursorCallback(GLFWwindow * window, double xpos, double ypos) {
     
 }
 
-Eigen::Vector2d PluginMulti::imageCoord2GLCoordImpl(Eigen::Vector2d img_pt) {
-    return img_pt;
-}
-
-Eigen::Vector2d PluginMulti::glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt) {
-    return gl_pt;
-}
-
-bool PluginMulti::isPointInImageImpl(double x, double y) {
-    return true;
+int PluginMulti::isPointInImage(double x, double y) {
+    /*
+     * Return frame index if cursor is on the frame else -1
+     */
+    
+    return -1;
 }
 
 } // namespace gl

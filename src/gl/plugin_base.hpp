@@ -9,6 +9,7 @@
 #ifndef PLUGIN_BASE_HPP__
 #define PLUGIN_BASE_HPP__
 
+#include <Eigen/Eigen>
 #include <opencv2/opencv.hpp>
 
 #include "image.hpp"
@@ -22,10 +23,11 @@ class PluginBase {
   public:
     virtual ~PluginBase() {}
 
-    // caution : these static variables are implemented in inherited class!
     static inline std::function<Eigen::Vector2d(Eigen::Vector2d)> imageCoord2GLCoord;
     static inline std::function<Eigen::Vector2d(Eigen::Vector2d)> glCoord2ImageCoord;
-    static inline std::function<bool(double x, double y)> isPointInImage;
+    
+    static Eigen::Vector2d imageCoord2GLCoordImpl(Eigen::Vector2d img_pt, int frame_idx);
+    static Eigen::Vector2d glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt, int frame_idx);
 
     // BaseGL::draw() の最初に呼び出される
     void initDraw() {

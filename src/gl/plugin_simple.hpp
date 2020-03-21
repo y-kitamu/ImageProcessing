@@ -25,17 +25,16 @@ class PluginSimple: public PluginBase {
     static void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
     static void mouseCallback(GLFWwindow *window, int button, int action, int mods);
     static void cursorCallback(GLFWwindow * window, double xpos, double ypos);
+    static void windowSizeCallback(GLFWwindow* window, int w, int h);
+    static void framebufferSizeCallback(GLFWwindow* window, int w, int h);
 
     void setTexture() override;
     void loadGLObjects() override;
     void drawGL() override;
     void drawImgui() override;
     
-    // polymophism で static function を使いたいので,
-    // 基底class に static std::function の変数を宣言して、以下の関数をその変数に set する
-    static Eigen::Vector2d imageCoord2GLCoordImpl(Eigen::Vector2d img_pt);
-    static Eigen::Vector2d glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt);
-    static bool isPointInImageImpl(double x, double y);
+    static bool isPointInImage(double x, double y);
+    static void setViewport();
 
   private:
     const std::string shader_basename = "simple_texture";

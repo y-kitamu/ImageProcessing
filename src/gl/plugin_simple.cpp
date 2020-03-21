@@ -13,14 +13,24 @@ PluginSimple::PluginSimple() {
     glfwSetScrollCallback(BaseGL::img_window, scrollCallback);
     glfwSetMouseButtonCallback(BaseGL::img_window, mouseCallback);
     glfwSetCursorPosCallback(BaseGL::img_window, cursorCallback);
+    glfwSetWindowSizeCallback(BaseGL::img_window, windowSizeCallback);
+    glfwSetFramebufferSizeCallback(BaseGL::img_window, framebufferSizeCallback);
 
     shader_program_id = setShader(
         (shader_dir / fs::path(shader_basename + ".vert")).generic_string(),
         (shader_dir / fs::path(shader_basename + ".frag")).generic_string());
 
-    imageCoord2GLCoord = imageCoord2GLCoordImpl;
-    glCoord2ImageCoord = glCoord2ImageCoordImpl;
-    isPointInImage = isPointInImageImpl;
+    imageCoord2GLCoord = [](Eigen::Vector2d img_pt) {
+        return imageCoord2GLCoordImpl(img_pt, frame_idx);
+    };
+    glCoord2ImageCoord = [](Eigen::Vector2d gl_pt) {
+        return glCoord2ImageCoordImpl(gl_pt, frame_idx);
+    };
+    BaseGL::view_width = BaseGL::width;
+    BaseGL::view_height = BaseGL::height;
+    BaseGL::width_inv = 1.f / BaseGL::width;
+    BaseGL::height_inv = 1.f / BaseGL::height;
+    glViewport(0, 0, BaseGL::view_width, BaseGL::view_height);
 }
 
 void PluginSimple::setTexture() {
@@ -98,48 +108,18 @@ void PluginSimple::cursorCallback(GLFWwindow * window, double x, double y) {
     }
 }
 
-Eigen::Vector2d PluginSimple::imageCoord2GLCoordImpl(Eigen::Vector2d img_pt) {
-    int image_width = BaseGL::frames[frame_idx]->getImageWidth();
-    int image_height = BaseGL::frames[frame_idx]->getImageHeight();
-    float scale = BaseGL::frames[frame_idx]->getScale();
-    float offset_x = BaseGL::frames[frame_idx]->getOffsetX();
-    float offset_y = BaseGL::frames[frame_idx]->getOffsetY();
-    
-    float aspect_ratio = (float)image_height / image_width * BaseGL::width / BaseGL::height;
-    Eigen::Vector2d gl_pt;
-
-    gl_pt.x() = (img_pt.x() * scale / image_width + offset_x - scale * 0.5 + 1.0f)
-        * 0.5 * BaseGL::width;
-    gl_pt.y() = (1 - ((1 - img_pt.y() / image_height) * scale * aspect_ratio + offset_y -
-                      scale * 0.5 * aspect_ratio + 1.0f) * 0.5) * BaseGL::height;
-    return gl_pt;
+void PluginSimple::windowSizeCallback(GLFWwindow* window, int w, int h) {
+    BaseGL::width = w; BaseGL::height = h;
+    BaseGL::width_inv = 1.0f / w, BaseGL::height_inv = 1.0f / h;
 }
 
-
-Eigen::Vector2d PluginSimple::glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt) {
-    /*
-     * window の coordinate (左上(0, 0)、右下(window_width, window_height)) から
-     * Image coordinate (画像左上(0, 0), 画像右下(image_width, image_height))
-     */
-    int image_width = BaseGL::frames[frame_idx]->getImageWidth();
-    int image_height = BaseGL::frames[frame_idx]->getImageHeight();
-    float scale = BaseGL::frames[frame_idx]->getScale();
-    float offset_x = BaseGL::frames[frame_idx]->getOffsetX();
-    float offset_y = BaseGL::frames[frame_idx]->getOffsetY();
-    
-    double aspect_ratio = 1.0 * image_height  * BaseGL::width / (image_width * BaseGL::height);
-    Eigen::Vector2d img_pt;
-    
-    img_pt.x() = (2.0 * gl_pt.x() * BaseGL::width_inv - 1.0 - offset_x + scale * 0.5)
-        * image_width / scale;
-    img_pt.y() = (1 - ((1 - gl_pt.y() * BaseGL::height_inv) * 2 - 1.0 - offset_y +
-                       scale * 0.5 * aspect_ratio) / (scale * aspect_ratio)) * image_height;
-    
-    return img_pt;
+void PluginSimple::framebufferSizeCallback(GLFWwindow* window, int w, int h) {
+    glViewport(0, 0, w, h);
+    BaseGL::view_width = w;
+    BaseGL::view_height = h;
 }
 
-
-bool PluginSimple::isPointInImageImpl(double x, double y) {
+bool PluginSimple::isPointInImage(double x, double y) {
     int image_width = BaseGL::frames[frame_idx]->getImageWidth();
     int image_height = BaseGL::frames[frame_idx]->getImageHeight();
     auto ipt = glCoord2ImageCoord(Eigen::Vector2d(x, y));

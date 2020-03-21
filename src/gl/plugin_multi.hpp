@@ -27,19 +27,17 @@ class PluginMulti : public PluginBase {
     void drawGL() override;
     void drawImgui() override;
 
-    static Eigen::Vector2d imageCoord2GLCoordImpl(Eigen::Vector2d img_pt);
-    static Eigen::Vector2d glCoord2ImageCoordImpl(Eigen::Vector2d gl_pt);
-    static bool isPointInImageImpl(double x, double y);
-    
+    static int isPointInImage(double x, double y);
     static void setViewport(int view_idx);
     static void setViewport(int minx, int miny, int width, int height);
-    static int calcCursorPointView();
+    static void calcCursorPointView();
 
   private:
     const std::string shader_basename = "simple_texture";
     const fs::path shader_dir = fs::path(__FILE__).parent_path() / fs::path("shader");
     
     inline static int first_frame_idx = 0, second_frame_idx = 1;  // 表示する画像の index
+    inline static int frame_idx = 0; 
 };
 
 }
