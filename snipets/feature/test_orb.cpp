@@ -50,6 +50,7 @@ int main(int argc, char ** argv) {
 
     auto window = gl::BaseGL::getInstance();
     std::shared_ptr<gl::Image> debug_image = window.addFrame(mat);
+    window.addFrame(mat);
 
     for (auto && kpt : kpts) {
         Eigen::Vector2d pt(kpt.pt.x, kpt.pt.y);

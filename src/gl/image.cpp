@@ -67,7 +67,7 @@ void Image::load() {
     // 頂点バッファオブジェクト (VBO, cpu 側のオブジェクト) を直接描画に指定することはできません.
     // 描画に指定できるのは, 頂点バッファオブジェクトを組み込んだ頂点配列オブジェクト (VAO, gpu側のオブジェクト) だけです.
 
-    float aspect_ratio = (float)image_height / image_width * BaseGL::width / BaseGL::height;
+    float aspect_ratio = (float)image_height / image_width * BaseGL::view_width / BaseGL::view_height;
     GLfloat position[4][4] = {
         // [x, y, u, v]
         {-0.5f * scale + offset_x, -0.5f * aspect_ratio * scale + offset_y, 0.0f, 1.0f},
@@ -123,6 +123,5 @@ void Image::draw() {
 void Image::addPoint(Eigen::Vector2d pt, Eigen::Vector4f color) {
     points.addPoint(pt, color);
 }
-
 
 }

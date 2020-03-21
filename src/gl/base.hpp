@@ -16,6 +16,8 @@
 
 #include "base_include.hpp"
 #include "plugin_base.hpp"
+#include "plugin_simple.hpp"
+#include "plugin_multi.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -76,12 +78,16 @@ class BaseGL {
   public:
     static constexpr const char* glsl_version = "#version 330";
     
-    inline static int width = 1024, height = 768;
-    inline static float width_inv = 1.0f / width, height_inv = 1.0f / height;
+    inline static int width = 1024, height = 768; // window width and height
+    inline static int view_width = width, view_height = height;
+    inline static float width_inv = 1.0f / view_width, height_inv = 1.0f / view_height;
     inline static GLFWwindow *img_window;
     // const char* glsl_version = "#version 460 core";
 
-    const std::vector<std::string> plugin_names = {"Simple"};
+    const std::vector<std::pair<std::string, std::function<std::shared_ptr<PluginBase>()>>> plugins {
+        {"Simple", std::make_shared<PluginSimple>},
+        {"Multi", std::make_shared<PluginMulti>}
+    };
     inline static std::shared_ptr<PluginBase> plugin;
     inline static std::vector<std::shared_ptr<Image>> frames = std::vector<std::shared_ptr<Image>>();
     

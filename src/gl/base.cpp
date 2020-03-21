@@ -11,6 +11,7 @@ BaseGL::BaseGL() {
     glfwSetWindowSizeCallback(img_window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(img_window, framebufferSizeCallback);
     // callback を基底クラスと派生クラスにバラバラにおいていい？
+
     plugin = std::make_shared<PluginSimple>();
 }
 
@@ -30,7 +31,7 @@ void BaseGL::initGL() {
         std::cout << "failed to initialize GLFW" << std::endl;
         std::exit(EXIT_FAILURE);
     }
-        
+    
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x アンチエイリアス
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL3.3を使います。
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -93,7 +94,7 @@ void BaseGL::draw() {
 
         plugin->loadGLObjects();
         plugin->drawGL();
-        drawImguiMenu();  // virtual : imgui の描画処理
+        drawImguiMenu(); 
         plugin->drawImgui();
         checkKeyboardAndMouseInput();
         plugin->checkKeyboardAndMouseInput();
@@ -161,13 +162,15 @@ void BaseGL::drawImguiMenu() {
                 }
                 ImGui::EndMenu();
             }
-            // if (ImGui::BeginMenu("Plugin")) {
-            //     for (auto && plug_name : plugin_names) {
-            //         if (ImGui::MenuItem(plug_name)) {
-                        
-            //         }
-            //     }
-            // }
+            if (ImGui::BeginMenu("Plugin")) {
+                for (auto && plug : plugins) {
+                    if (ImGui::MenuItem(plug.first.c_str())) {
+                        plugin = plug.second();
+                        plugin->initDraw();
+                    }
+                }
+                ImGui::EndMenu();
+            }
             ImGui::EndMainMenuBar();
         }
     }
