@@ -154,15 +154,18 @@ void PluginMulti::calcCursorPointFrame(double x, double y) {
      * Return frame index if cursor is on the frame else -1
      */
     setViewport(BaseGL::Viewport::LEFT);
-    if (isPointInImage(x, y)) {
-        focused_frame_idx = first_frame_idx;
-        return;
-    }
-    x = x - BaseGL::view_width;
-    setViewport(BaseGL::Viewport::RIGHT);
-    if (isPointInImage(x, y)) {
-        focused_frame_idx = second_frame_idx;
-        return;
+    if (x < BaseGL::view_width) {
+        if (isPointInImage(x, y)) {
+            focused_frame_idx = first_frame_idx;
+            return;
+        }
+    } else {
+        setViewport(BaseGL::Viewport::RIGHT);
+        x = x - BaseGL::width + BaseGL::view_width;
+        if (isPointInImage(x, y)) {
+            focused_frame_idx = second_frame_idx;
+            return;
+        }
     }
     focused_frame_idx = -1;
 }

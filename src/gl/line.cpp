@@ -14,6 +14,13 @@ void Line::load(int frame_idx) {
     }
     auto gl_pt0 = pt0->getGLPt();
     auto gl_pt1 = pt1->getGLPt();
+    if (gl_pt0.x() < -1 || gl_pt0.x() > 1 || gl_pt0.y() < -1 || gl_pt0.y() > 1) {
+        return;
+    }
+    if (gl_pt1.x() < -1 || gl_pt1.x() > 1 || gl_pt1.y() < -1 || gl_pt1.y() > 1) {
+        return;
+    }
+    
     load(gl_pt0, gl_pt1);
 }
 
@@ -33,6 +40,12 @@ void Line::load(int frame_idx0, int frame_idx1) {
     }
     auto gl_pt0 = pt0->getGLPt();
     auto gl_pt1 = pt1->getGLPt();
+    if (gl_pt0.x() < -1 || gl_pt0.x() > 1 || gl_pt0.y() < -1 || gl_pt0.y() > 1) {
+        return;
+    }
+    if (gl_pt1.x() < -1 || gl_pt1.x() > 1 || gl_pt1.y() < -1 || gl_pt1.y() > 1) {
+        return;
+    }
 
     auto convert_coord = [&frame_idx0, &frame_idx1](Eigen::Vector2d pt, int idx) {
         if (idx == frame_idx0) {
@@ -48,7 +61,7 @@ void Line::load(int frame_idx0, int frame_idx1) {
 }
 
 
-void Line::load(Eigen::Vector2d gl_pt0, Eigen::Vector2d gl_pt1) {
+void Line::load(Eigen::Vector2d gl_pt0, Eigen::Vector2d gl_pt1) {    
     is_active = true;
     GLfloat position[2][6] = {
         {(float)gl_pt0.x(), (float)gl_pt0.y(), color.x(), color.y(), color.z(), color.w()},
