@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2)
 
+option(BUILD_GTEST "Build all google tests." ON)
+
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
@@ -40,11 +42,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 # boost  (参考 : https://sgry.jp/blog/2017/06/06/4624/)
 # target_link_libraries(<executable_name> Boost::filesystem Boost::system) みたいな感じで link する
-if (EXISTS "/home/kitamura/lib/boost_1_67_0")
-  set(BOOST_ROOT "/home/kitamura/lib/boost_1_67_0")
-elseif (EXISTS "/home/kitamura/lib/boost/")
-  set(BOOST_ROOT "/home/kitamura/lib/boost")
-endif()
 # message("BOOST_ROOT : ${BOOST_ROOT}")
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 set(EXTERNAL_LIBS ${EXTERNAL_LIBS} Boost::system Boost::filesystem CACHE INTERNAL "")
@@ -55,7 +52,7 @@ set(EXTERNAL_LIBS ${EXTERNAL_LIBS} ${CERES_LIBRARIES} CACHE INTERNAL "")
 
 # another submodules
 include_directories(AFTER ext ext/imgui ext/fmt/include ext/cereal/include ext/nameof/include)
-include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)  # TODO : refactor 
+include_directories(AFTER ext/imgui/examples ext/imgui/examples/libs/gl3w)  # TODO : refactor
 add_subdirectory(ext)
 # message(${EXTERNAL_LIBS})
 
@@ -64,11 +61,18 @@ include_directories(SYSTEM /usr/include/eigen3)  # docker 環境だとここに 
 
 ### Add Subdirectory Libraries
 include_directories(AFTER src)
-add_subdirectory(src/gl)
-add_subdirectory(src/TGV)
+add_subdirectory(src)
 
 ### Add Executable
 add_subdirectory(snipets)
+
+if (BUILD_GTEST)
+  set(EXTERNAL_LIBS
+    ${EXTERNAL_LIBS}
+    gtest)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 
 ### Print Variables (Debug)
