@@ -25,7 +25,7 @@ class PoseTest : public ::testing::Test {
         y_90 = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI * 0.5, y_norm));
         z_90 = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI * 0.5, z_norm));
 
-        z_30 = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI / 6, z_norm));
+        z_30 = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI / 6.0, z_norm));
     }
 
     Eigen::Vector3d x_norm, y_norm, z_norm;
@@ -45,10 +45,10 @@ TEST_F(PoseTest, Quaternion) {
 
     mat = y_90.matrix();
     ASSERT_LT(std::abs(mat(0, 2) - 1.0), MAX_ERROR);
-    ASSERT_LT(std::abs(mat(2, 2) - 1.0), MAX_ERROR);
+    ASSERT_LT(mat(2, 2), MAX_ERROR);
 
     mat = z_30.matrix();
-    ASSERT_LT(std::abs(mat(0, 0) - 1.0 / std::pow(2, 0.5)), MAX_ERROR);
+    ASSERT_LT(std::abs(mat(0, 0) - std::sqrt(3.0) * 0.5), MAX_ERROR);
     ASSERT_LT(std::abs(mat(1, 0) - 0.5), MAX_ERROR);
 }
 
@@ -64,7 +64,7 @@ TEST_F(PoseTest, RotationTransform) {
     ASSERT_LT((res2 + y_norm).norm(), MAX_ERROR);
 
     auto res3 = z_30 * x_norm;
-    ASSERT_LT(std::abs(res3.x() - 1.0 / std::pow(2, 0.5)), MAX_ERROR);
+    ASSERT_LT(std::abs(res3.x() - std::sqrt(3) * 0.5), MAX_ERROR);
     ASSERT_LT(std::abs(res3.y() - 0.5), MAX_ERROR);
 
     geometry::Pose pose(Eigen::AngleAxisd(M_PI / 6, z_norm), Eigen::Vector3d::Zero());
@@ -73,11 +73,26 @@ TEST_F(PoseTest, RotationTransform) {
 }
 
 TEST_F(PoseTest, TranslationTransform) {
-
+    geometry::Pose pose(Eigen::AngleAxisd(0, z_norm), x_trans);
+    auto res0 = pose.transform(x_norm);
+    ASSERT_LT((res0 - Eigen::Vector3d(3.0, 0.0, 0.0)).norm(), MAX_ERROR);
 }
 
 TEST_F(PoseTest, Transform) {
+    geometry::Pose pose(Eigen::AngleAxisd(M_PI / 6, z_norm), z_trans);
+    auto res0 = pose.transform(x_norm);
+    ASSERT_LT((res0 - Eigen::Vector3d(std::sqrt(3) * 0.5, 0.5, 2)).norm(), MAX_ERROR);
+}
 
+TEST_F(PoseTest, InverseTransform) {
+    geometry::Pose pose(z_30, z_trans);
+    auto res0 = pose.transform(x_norm);
+    res0 = pose.inv_transform(res0);
+    ASSERT_LT((res0 - x_norm).norm(), MAX_ERROR);
+
+    auto res1 = pose.inv_transform(z_norm);
+    res1 = pose.transform(res1);
+    ASSERT_LT((res1 - z_norm).norm(), MAX_ERROR);
 }
 
 int main(int argc, char ** argv) {

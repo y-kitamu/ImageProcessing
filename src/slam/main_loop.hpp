@@ -13,6 +13,9 @@
 #include <memory>
 
 #include <opencv2/opencv.hpp>
+#include <fmt/format.h>
+
+#include "logging/logging.hpp"
 
 #include "tracking.hpp"
 #include "local_mapping.hpp"
@@ -22,15 +25,16 @@
 namespace slam {
 
 
-class IOHandler {
-    cv::Mat& read();
-};
-
-
 template <class Tracker=Tracking, class Mapper=LocalMapping, class Closer=LoopClosing>
 class MainLoop {
   public:
-    MainLoop() {
+    MainLoop(std::string video_filename) {
+        cap.open(video_filename);
+        if (!cap.isOpened()) {
+            logging::logd("Failed to open file : {}\n", video_filename);
+            std::exit(EXIT_FAILURE);
+        }
+
         tracker = std::make_unique<Tracker>();
         local_mapper = std::make_unique<Mapper>();
         loop_closer = std::make_unique<Closer>();
@@ -38,18 +42,22 @@ class MainLoop {
 
     ~MainLoop() {};
     void run() {
-        while (true) {
-            auto fut_tracker = std::async(&Tracking::run, tracker.get());
-            fut_tracker.get();
-            if (true) {
-                auto fut_mapper = std::async(&LocalMapping::run, local_mapper.get());
-                fut_mapper.wait();
+        cv::Mat cur_frame, ref_frame;
+        for (;;) {
+            cap.read(cur_frame);
+            if (cur_frame.empty()) {
+                logging::logd("Failed to initialize tracking");
+                break;
             }
-            if (true) {
-                auto fut_closer = std::async(&LoopClosing::run, loop_closer.get());
+
+        }
+
+        for (;;) {
+            cap.read(cur_frame);
+            if (cur_frame.empty()) {
+                logging::logd("Video is finished.");
+                break;
             }
-            fut_tracker.wait();
-            break;
         }
     }
 
@@ -57,6 +65,7 @@ class MainLoop {
     std::unique_ptr<Tracking> tracker;
     std::unique_ptr<LocalMapping> local_mapper;
     std::unique_ptr<LoopClosing> loop_closer;
+    cv::VideoCapture cap;
 };
 
 } // namespace slam

@@ -13,33 +13,40 @@
 #include <sstream>
 #include <future>
 
+#include <opencv2/opencv.hpp>
+
+#include "map.hpp"
+
+
 namespace slam {
 
 class Tracking {
   public:
-    void initialize();
+    bool initialize(const cv::Mat& current_frame);
 
     void run() {
         std::stringstream ss;
         ss << "Tracking thread : "  << std::this_thread::get_id() << std::endl;
         std::cout << ss.str();
-        extract_keypoint();
+        extractKeypoint();
     };
 
   protected:
-    virtual void extract_keypoint() {
+    virtual void extractKeypoint() {
         std::stringstream ss;
         ss << "extract_keypoint in Tracking" << std::endl;
         std::cout << ss.str();
     };
-    virtual void estimate_init_pose() {}
-    virtual void track_local_map() {}
-    virtual bool is_create_new_keyframe() {}
+    virtual void estimateInitPose() {}
+    virtual void trackLocalMap() {}
+    virtual bool isCreateNewKeyframe() {}
+
+    Frame reference_frame;
 };
 
 
 class TrackingKLT : public Tracking {
-    void extract_keypoint() override {
+    void extractKeypoint() override {
         std::stringstream ss;
         ss << "extract_keypoint in TrackingKLT" << std::endl;
         std::cout << ss.str();
