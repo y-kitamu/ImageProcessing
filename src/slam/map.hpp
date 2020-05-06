@@ -45,6 +45,10 @@ class Frame {
 
   private:
     bool is_empty = true;
+
+  public:
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
 };
 
 

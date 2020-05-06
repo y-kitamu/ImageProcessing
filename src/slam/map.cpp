@@ -10,12 +10,8 @@ namespace slam {
 
 Frame::Frame(const cv::Mat& frame) {
     cv::Ptr<cv::Feature2D> ptr =
-        cv::ORB::create(500, 1.2f, 8, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
-    std::vector<cv::KeyPoint> kpts;
-    cv::Mat descriptors;
-    ptr->detect(frame, kpts);
-    ptr->compute(frame, kpts, descriptors);
-
+        cv::ORB::create(500, 1.0f, 1, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
+    ptr->detectAndCompute(frame, cv::Mat(), keypoints, descriptors);
     is_empty = false;
 }
 

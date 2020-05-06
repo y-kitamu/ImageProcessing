@@ -42,6 +42,8 @@ class Tracking {
     virtual bool isCreateNewKeyframe() {}
 
     Frame reference_frame;
+
+    static constexpr int MINIMUM_MATCHES = 50;
 };
 
 

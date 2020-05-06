@@ -28,10 +28,11 @@ namespace slam {
 template <class Tracker=Tracking, class Mapper=LocalMapping, class Closer=LoopClosing>
 class MainLoop {
   public:
+    MainLoop() {}
     MainLoop(std::string video_filename) {
         cap.open(video_filename);
         if (!cap.isOpened()) {
-            logging::logd("Failed to open file : {}\n", video_filename);
+            logd("Failed to open file : {}\n", video_filename);
             std::exit(EXIT_FAILURE);
         }
 
@@ -42,20 +43,26 @@ class MainLoop {
 
     ~MainLoop() {};
     void run() {
-        cv::Mat cur_frame, ref_frame;
+        cv::Mat frame;
         for (;;) {
-            cap.read(cur_frame);
-            if (cur_frame.empty()) {
-                logging::logd("Failed to initialize tracking");
+            cap.read(frame);
+            if (frame.empty()) {
+                logd("Failed to initialize tracking.");
                 break;
             }
-
+            if (tracker->initialize(frame)) {
+                logd("Successfuly initialized map.");
+                break;
+            }
+            for (int i = 0; i < 20; i++) {
+                cap.read(frame);
+            }
         }
 
         for (;;) {
-            cap.read(cur_frame);
-            if (cur_frame.empty()) {
-                logging::logd("Video is finished.");
+            cap.read(frame);
+            if (frame.empty()) {
+                logd("Video is finished.");
                 break;
             }
         }

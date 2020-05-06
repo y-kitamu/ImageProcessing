@@ -11,6 +11,7 @@
 #include <boost/filesystem.hpp>
 
 #include <slam/main_loop.hpp>
+#include <gl/base.hpp>
 
 // for type debugging
 template<class T>
@@ -33,8 +34,15 @@ int main(int argc, char ** argv) {
     std::cout << "Profiling to " << save_path << std::endl;
     // end logging codes
 
-    slam::MainLoop looper1;
+    auto window = gl::BaseGL::getInstance();
+
+    fs::path project_root = fs::path(__FILE__).parent_path() / fs::path("../../");
+
+    fs::path video_path = project_root / fs::path("data/video/mov_hts-samp007.mp4");
+    slam::MainLoop looper1(video_path.generic_string());
     looper1.run();
+
+    window.draw();
 
     ProfilerStop();
 }
