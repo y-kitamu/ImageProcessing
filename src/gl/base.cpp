@@ -29,7 +29,7 @@ void BaseGL::initGL() {
         std::cout << "failed to initialize GLFW" << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    
+
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x アンチエイリアス
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL3.3を使います。
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -51,19 +51,19 @@ void BaseGL::initGL() {
         std::cout << "failed to initialize gl3w" << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    
+
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(img_window, GLFW_STICKY_KEYS, GL_TRUE);
-    
+
     GLint flags;
     glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
         // initialize debug output
         glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(glDebugOutput, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-    } 
+    }
 }
 
 
@@ -71,7 +71,7 @@ void BaseGL::initImgui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO & io = ImGui::GetIO(); (void) io;
-    
+
     imgui_theme.setCurrentTheme();
 
     ImGui_ImplGlfw_InitForOpenGL(img_window, true);
@@ -90,9 +90,13 @@ void BaseGL::draw() {
         glfwMakeContextCurrent(img_window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        if (frames.size() == 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            continue;
+        }
         plugin->loadGLObjects();
         plugin->drawGL();
-        drawImguiMenu(); 
+        drawImguiMenu();
         plugin->drawImgui();
         checkKeyboardAndMouseInput();
         plugin->checkKeyboardAndMouseInput();
@@ -107,7 +111,7 @@ void BaseGL::draw() {
             framecount = 0;
             previous = current;
         }
-        
+
         // frame rate to 30 fps
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
@@ -130,10 +134,10 @@ void BaseGL::drawImguiMenu() {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 if (ImGui::MenuItem("Save")) {
-                    
+
                 }
                 if (ImGui::MenuItem("Load")) {
-                    
+
                 }
                 if (ImGui::MenuItem("Open file")) {
                     char c_filename[1024];
@@ -181,12 +185,12 @@ void BaseGL::checkKeyboardAndMouseInput() {
     }
 }
 
-void APIENTRY BaseGL::glDebugOutput(GLenum source,  GLenum type, GLuint id, GLenum severity, 
+void APIENTRY BaseGL::glDebugOutput(GLenum source,  GLenum type, GLuint id, GLenum severity,
                                     GLsizei length, const GLchar *message, void *userParam) {
     // https://learnopengl.com/In-Practice/Debugging
-    
+
     // ignore non-significant error/warning codes
-    if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
+    if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 
     std::cout << "---------------" << std::endl;
     std::cout << "Debug message (" << id << "): " <<  message << std::endl;
@@ -203,7 +207,7 @@ void APIENTRY BaseGL::glDebugOutput(GLenum source,  GLenum type, GLuint id, GLen
     switch (type) {
         case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
         case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break; 
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break;
         case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Type: Portability"; break;
         case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Type: Performance"; break;
         case GL_DEBUG_TYPE_MARKER:              std::cout << "Type: Marker"; break;
@@ -211,7 +215,7 @@ void APIENTRY BaseGL::glDebugOutput(GLenum source,  GLenum type, GLuint id, GLen
         case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
         case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
     } std::cout << std::endl;
-    
+
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:         std::cout << "Severity: high"; break;
         case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Severity: medium"; break;
