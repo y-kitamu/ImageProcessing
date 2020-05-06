@@ -13,16 +13,6 @@ BaseGL::BaseGL() {
     Lines::setShader();
 }
 
-BaseGL::~BaseGL() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(img_window);
-    glfwTerminate();
-    return;
-}
-
 void BaseGL::initGL() {
     // initialize glfw
     if (!glfwInit()) {
@@ -120,6 +110,13 @@ void BaseGL::draw() {
         glfwSwapBuffers(img_window);
         glfwPollEvents();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(img_window);
+    glfwTerminate();
 }
 
 
